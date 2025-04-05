@@ -19,15 +19,25 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Nunito', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding: 20px; /* TODO: only for desktop right now */
 }
 
 * {
   box-sizing: border-box;
-  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
+  padding: 0;
 }
 
 a {
@@ -35,8 +45,31 @@ a {
   text-decoration: none;
 }
 
+ul {
+  padding: 0;
+}
+
+.glassCard { /* TODO: convert to component */
+  background: rgba(0, 0, 0, 0.5); /* TODO: Set Variable */
+  border-radius: 1rem;
+  padding: 1rem;
+
+  margin-bottom: 1rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
 }

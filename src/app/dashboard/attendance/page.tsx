@@ -46,21 +46,20 @@ export default function AttendancePage() {
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">📅 Attendance</h1>
+    <div>
+      <h1>📅 Attendance</h1>
       {loading ? (
         <p>Loading events...</p>
       ) : events.length === 0 ? (
         <p>No events found.</p>
       ) : (
-        <ul className="space-y-4">
+        <ul>
           {events.map((event, i) => (
-            <li key={i} className="border rounded-xl p-4 shadow-sm bg-white">
-              <p><strong>Summary:</strong> {event.summary}</p>
-              <p><strong>Start:</strong> {event.dtstart}</p>
-              <p><strong>End:</strong> {event.dtend}</p>
-              <p><strong>Duration:</strong> {formatDuration(event.dtstart, event.dtend)}</p>
-              <br></br>
+            <li key={i} className="glassCard">
+                <p><strong>Summary:</strong> {event.summary}</p>
+                <p><strong>Start:</strong> {event.dtstart}</p>
+                <p><strong>End:</strong> {event.dtend}</p>
+                <p><strong>Duration:</strong> {formatDuration(event.dtstart, event.dtend)}</p>
             </li>
           ))}
         </ul>
