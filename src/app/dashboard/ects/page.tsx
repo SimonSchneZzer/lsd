@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { formatDuration, getDurationMinutes, estimateLessonUnits } from '@/lib/icsUtils';
+import { formatDuration } from '@/lib/icsUtils';
 
 type Event = {
   summary: string;
