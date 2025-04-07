@@ -19,3 +19,8 @@ export function parseIcsDate(dateStr: string): Date {
     const remaining = minutes % 60;
     return `${hours > 0 ? `${hours}h ` : ''}${remaining}min`;
   }
+
+  export function estimateLessonUnits(durationMinutes: number): number {
+    const possibleEH = Math.floor((durationMinutes + 15) / 45);
+    return Math.min(possibleEH, Math.floor(durationMinutes / 45) + 1);
+  }

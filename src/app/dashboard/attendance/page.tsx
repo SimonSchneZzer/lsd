@@ -1,32 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { formatDuration, getDurationMinutes, estimateLessonUnits } from '@/lib/icsUtils';
 
 type Event = {
   summary: string;
   dtstart: string;
   dtend: string;
 };
-
-function parseIcsDate(dateStr: string): Date {
-  // Formatiing: 20250520T151500 → 2025-05-20T15:15:00
-  const year = dateStr.slice(0, 4);
-  const month = dateStr.slice(4, 6);
-  const day = dateStr.slice(6, 8);
-  const hour = dateStr.slice(9, 11);
-  const minute = dateStr.slice(11, 13);
-  return new Date(`${year}-${month}-${day}T${hour}:${minute}:00`);
-}
-
-function formatDuration(start: string, end: string): string {
-  const startDate = parseIcsDate(start);
-  const endDate = parseIcsDate(end);
-  const diffMs = endDate.getTime() - startDate.getTime();
-  const minutes = Math.floor(diffMs / (1000 * 60));
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return `${hours > 0 ? `${hours}h ` : ''}${remainingMinutes}min`;
-}
 
 export default function AttendancePage() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -54,14 +35,19 @@ export default function AttendancePage() {
         <p>No events found.</p>
       ) : (
         <ul>
-          {events.map((event, i) => (
-            <li key={i} className="glassCard">
+          {events.map((event, i) => {
+            const duration = formatDuration(event.dtstart, event.dtend);
+            const durationMinutes = getDurationMinutes(event.dtstart, event.dtend);
+            const lessonUnits = estimateLessonUnits(durationMinutes);
+            console.log(`⏱️ ${event.summary} = ${durationMinutes}min → ${lessonUnits} EH`);
+
+            return (
+              <li key={i} className="glassCard">
                 <p><strong>Summary:</strong> {event.summary}</p>
-                <p><strong>Start:</strong> {event.dtstart}</p>
-                <p><strong>End:</strong> {event.dtend}</p>
-                <p><strong>Duration:</strong> {formatDuration(event.dtstart, event.dtend)}</p>
-            </li>
-          ))}
+                <p><strong>Duration:</strong> {duration} ({lessonUnits  } EH)</p>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
