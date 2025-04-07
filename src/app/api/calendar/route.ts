@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import ectsMappingData from '../../../data/ectsMapping.json';
+import { getDurationMinutes } from '@/lib/icsUtils';
 
 function flattenMapping(mappingData: any): Record<string, number> {
   const flattened: Record<string, number> = {};
@@ -79,10 +80,13 @@ export async function GET() {
       return matchingKey ? mapping[matchingKey] : 0;
     }
 
-    const eventsWithEcts = events.map((event) => ({
-      ...event,
-      ects: getEctsValue(event.summary, flattenedMapping)
-    }));
+    const eventsWithEcts = events.map((event) => {
+      if (!event) return null;
+      return {
+        ...event,
+        ects: getEctsValue(event.summary, flattenedMapping)
+      };
+    }).filter(Boolean);
 
 
     return NextResponse.json({ events: eventsWithEcts });
