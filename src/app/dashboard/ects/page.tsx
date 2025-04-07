@@ -1,17 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { formatDuration } from '@/lib/icsUtils';
-
-type Event = {
-  summary: string;
-  dtstart: string;
-  dtend: string;
-  ects: number;
-};
+import { CalendarEvent } from '@/types/event';
 
 export default function ECTSPage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,14 +30,12 @@ export default function ECTSPage() {
         <ul>
           {events.map((event, i) => (
             <li key={i}>
-                <p><strong>Summary:</strong> {event.summary}</p>
-                <p><strong>Start:</strong> {event.dtstart}</p>
-                <p><strong>End:</strong> {event.dtend}</p>
-                <p><strong>Duration:</strong> {formatDuration(event.dtstart, event.dtend)}</p>
-                <p><strong>ECTS:</strong> {event.ects}</p>
+              <p><strong>Summary:</strong> {event.summary}</p>
+              <p><strong>ECTS:</strong> {event.ects}</p>
             </li>
           ))}
         </ul>
       )}
     </div>
-  )};
+  );
+}

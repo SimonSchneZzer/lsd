@@ -1,16 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { formatDuration, getDurationMinutes, estimateLessonUnits } from '@/lib/icsUtils';
-
-type Event = {
-  summary: string;
-  dtstart: string;
-  dtend: string;
-};
+import { formatDuration } from '@/lib/icsUtils';
+import { CalendarEvent } from '@/types/event';
 
 export default function AttendancePage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,19 +29,14 @@ export default function AttendancePage() {
         <p>No events found.</p>
       ) : (
         <ul>
-          {events.map((event, i) => {
-            const duration = formatDuration(event.dtstart, event.dtend);
-            const durationMinutes = getDurationMinutes(event.dtstart, event.dtend);
-            const lessonUnits = estimateLessonUnits(durationMinutes);
-            console.log(`⏱️ ${event.summary} = ${durationMinutes}min → ${lessonUnits} EH`);
-
-            return (
-              <li key={i}>
-                <p><strong>Summary:</strong> {event.summary}</p>
-                <p><strong>Duration:</strong> {duration} ({lessonUnits  } EH)</p>
-              </li>
-            );
-          })}
+          {events.map((event, i) => (
+            <li key={i}>
+              <p><strong>Summary:</strong> {event.summary}</p>
+              <p>
+                <strong>Duration:</strong> {formatDuration(event.dtstart, event.dtend)} ({event.lessonUnits} EH)
+              </p>
+            </li>
+          ))}
         </ul>
       )}
     </div>
