@@ -46,7 +46,11 @@ const ICS_URL = 'https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical
 export async function GET() {
   try {
     const res = await fetch(ICS_URL);
-    const icsData = await res.text();
+    let icsData = await res.text();
+
+    icsData = icsData
+      .replace(/\r\n/g, '\n')
+      .replace(/\n[ \t]/g, '');
 
     const eventBlocks = icsData.match(/BEGIN:VEVENT([\s\S]*?)END:VEVENT/g);
 
@@ -55,12 +59,18 @@ export async function GET() {
     }
 
     const events = eventBlocks.map((block) => {
-      const summary = block.match(/SUMMARY:(.*)/)?.[1]?.trim() || '';
-      const dtstart = block.match(/DTSTART(?:;TZID=[^:]+)?:([0-9T]+)/)?.[1] || '';
-      const dtend = block.match(/DTEND(?:;TZID=[^:]+)?:([0-9T]+)/)?.[1] || '';
+      const summary = block.match(/SUMMARY:(.*)/)?.[1]?.replace(/\\n/g, ' ').trim() || '';
+      const description = block.match(/DESCRIPTION:(.*)/)?.[1]?.replace(/\\n/g, ' ').trim() || '';
+      const dtstartRaw = block.match(/DTSTART(?:;TZID=[^:]+)?:([0-9T]+)/)?.[1] || '';
+      const dtendRaw = block.match(/DTEND(?:;TZID=[^:]+)?:([0-9T]+)/)?.[1] || '';
 
-      return { summary, dtstart, dtend };
-    });
+      const durationMinutes = getDurationMinutes(dtstartRaw, dtendRaw);
+
+      const isGuestLecture = /gastvortrag|guest lecture/i.test(description);
+      if (isGuestLecture || durationMinutes >= 1439) return null;
+
+      return { summary, description, dtstart: dtstartRaw, dtend: dtendRaw };
+    }).filter(Boolean);
 
     const flattenedMapping = flattenMapping(ectsMappingData);
 
