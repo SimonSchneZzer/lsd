@@ -64,7 +64,8 @@
       { "name": "MMTB4MEUUE", "ects": 1 },
       { "name": "MMTB4MMPPT", "ects": 4 },
       { "name": "MMTB4SAISE", "ects": 4 },
-      { "name": "MMTB4TEARC", "ects": 0.5 }
+      { "name": "MMTB4TEARC", "ects": 0.5 },
+      { "name": "MMTB4MMPIL", "ects": 0.5 }
     ],
     "wahlpflicht": [
       { "name": "MMTB4EHAIL", "ects": 2.5 },
