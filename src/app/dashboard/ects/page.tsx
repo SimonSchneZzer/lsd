@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { formatDuration, getDurationMinutes, estimateLessonUnits } from '@/lib/icsUtils';
+import { formatDuration } from '@/lib/icsUtils';
 
 type Event = {
   summary: string;
@@ -29,7 +29,6 @@ export default function ECTSPage() {
 
   return (
     <div>
-      <h1>ECTS</h1>
       {loading ? (
         <p>Loading events...</p>
       ) : events.length === 0 ? (
@@ -37,7 +36,7 @@ export default function ECTSPage() {
       ) : (
         <ul>
           {events.map((event, i) => (
-            <li key={i} className="glassCard">
+            <li key={i}>
                 <p><strong>Summary:</strong> {event.summary}</p>
                 <p><strong>Start:</strong> {event.dtstart}</p>
                 <p><strong>End:</strong> {event.dtend}</p>

@@ -1,63 +1,26 @@
+/* ========================
+   General Styles & Variables
+======================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --glass-bg: rgba(0, 0, 0, 0.5);
+  --glass-color: #fff;
+  --glass-radius: 3rem;
+  --glass-padding: 2rem;
+  --glass-margin-bottom: 1rem;
+  --glass-blur: 10px;
+
+  --layout-padding-desktop: 20px;
+  --layout-padding-mobile: 10px;
+  --side-nav-width: 20em;
+  --side-nav-gap: 3rem;
+  --main-content-padding-bottom: 4rem;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-color: #000;
   }
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Nunito', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  padding: 20px; /* TODO: only for desktop right now */
-}
-
-* {
-  box-sizing: border-box;
-  list-style: none;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-  padding: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-ul {
-  padding: 0;
-}
-
-.glassCard { /* TODO: convert to component */
-  background: rgba(0, 0, 0, 0.5); /* TODO: Set Variable */
-  border-radius: 1rem;
-  padding: 1rem;
-
-  margin-bottom: 1rem;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #fff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -72,4 +35,162 @@ ul {
   font-weight: 100 1000;
   font-style: normal;
   font-display: swap;
+}
+
+/* ========================
+   Reset & Base Styles
+======================== */
+* {
+  box-sizing: border-box;
+  list-style: none;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: var(--layout-padding-desktop);
+}
+
+h1, h2, h3, h4, h5, h6,
+ul, li, p{
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ========================
+   Typography Styles
+======================== */
+
+/* Mobile defaults */
+h1 {
+  font-size: 1.75rem; /* 28px */
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 300;
+  letter-spacing: -0.25px;
+}
+
+p,
+a,
+li {
+  font-size: 1rem; /* 16px */
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Desktop overrides */
+@media (min-width: 769px) {
+  h1 {
+    font-size: 2.5rem; /* 40px */
+  }
+
+  h2 {
+    font-size: 1.5rem; /* 24px */
+  }
+
+  p,
+  a,
+  li {
+    font-size: 1.125rem; /* 18px */
+  }
+}
+
+/* ========================
+   Component Styles
+======================== */
+.glassCard {
+  background: var(--glass-bg);
+  border-radius: var(--glass-radius);
+  padding: var(--glass-padding);
+  margin-bottom: var(--glass-margin-bottom);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--glass-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================
+   Desktop Layout (default)
+======================== */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.side-nav {
+  position: fixed;
+  z-index: 10;
+  top: var(--layout-padding-desktop);
+  bottom: var(--layout-padding-desktop);
+  width: var(--side-nav-width);
+}
+
+.main-content {
+  flex-grow: 1;
+  margin-left: calc(var(--side-nav-width) + var(--side-nav-gap));
+}
+
+.bottom-nav {
+  display: none;
+}
+
+/* ========================
+   Mobile Layout
+======================== */
+@media (max-width: 768px) {
+  body {
+    padding: var(--layout-padding-mobile);
+  }
+
+  .layout {
+    flex-direction: column;
+  }
+
+  .side-nav {
+    display: none;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding-bottom: var(--main-content-padding-bottom);
+  }
+
+  .bottom-nav {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: var(--layout-padding-mobile);
+    right: var(--layout-padding-mobile);
+    z-index: 10;
+  }
+
+  .bottom-nav-list {
+    display: flex;
+    justify-content: space-around;
+  }
 }
