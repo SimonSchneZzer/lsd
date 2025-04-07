@@ -20,14 +20,23 @@ export async function GET() {
 
     const events = eventBlocks.map((block) => {
       const summaryMatch = block.match(/SUMMARY:(.*)/);
+      const descriptionMatch = block.match(/DESCRIPTION:(.*)/);
+    
       const rawSummary = summaryMatch ? summaryMatch[1] : '';
+      const rawDescription = descriptionMatch ? descriptionMatch[1] : '';
+    
       const summary = rawSummary.replace(/\\n/g, ' ').trim();
-
+      const description = rawDescription.replace(/\\n/g, ' ').trim();
+    
       const dtstart = block.match(/DTSTART(?:;TZID=[^:]+)?:([0-9T]+)/)?.[1] || '';
       const dtend = block.match(/DTEND(?:;TZID=[^:]+)?:([0-9T]+)/)?.[1] || '';
-
-      return { summary, dtstart, dtend };
-    });
+    
+      // ⛔ Filter out guest lectures
+      const isGuestLecture = /gastvortrag|guest lecture/i.test(description);
+      if (isGuestLecture) return null;
+    
+      return { summary, description, dtstart, dtend };
+    }).filter(Boolean); // 🧹 Remove nulls
 
     return NextResponse.json({ events });
   } catch (err) {
