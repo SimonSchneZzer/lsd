@@ -1,12 +1,21 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --glass-bg: rgba(0, 0, 0, 0.5);
+  --glass-color: #fff;
+  --glass-radius: 3rem;
+  --glass-padding: 2rem;
+  --glass-margin-bottom: 1rem;
+  --glass-blur: 10px;
+
+  --layout-padding-desktop: 20px;
+  --layout-padding-mobile: 10px;
+  --side-nav-width: 17em;
+  --main-content-padding-bottom: 4rem;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-color: #000;
   }
 }
 
@@ -14,6 +23,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  margin: 0;
 }
 
 body {
@@ -22,7 +32,7 @@ body {
   font-family: 'Nunito', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 20px; /* TODO: only for desktop right now */
+  padding: var(--layout-padding-desktop);
 }
 
 * {
@@ -35,7 +45,8 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+ul {
   margin: 0;
   padding: 0;
 }
@@ -45,21 +56,71 @@ a {
   text-decoration: none;
 }
 
-ul {
-  padding: 0;
+.glassCard {
+  background: var(--glass-bg);
+  border-radius: var(--glass-radius);
+  padding: var(--glass-padding);
+  margin-bottom: var(--glass-margin-bottom);
+
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--glass-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.glassCard { /* TODO: convert to component */
-  background: rgba(0, 0, 0, 0.5); /* TODO: Set Variable */
-  border-radius: 1rem;
-  padding: 1rem;
-
-  margin-bottom: 1rem;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #fff;
+/* ===== Layout Styles ===== */
+.layout {
+  display: flex;
+  min-height: 100vh;
 }
 
+.side-nav {
+  display: block;
+  width: var(--side-nav-width);
+}
+
+.bottom-nav {
+  display: none;
+}
+
+.main-content {
+  flex-grow: 1;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .side-nav {
+    display: none;
+  }
+
+  .bottom-nav {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 10;
+  }
+
+  .bottom-nav-list {
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem 0;
+  }
+
+  .main-content {
+    padding-bottom: var(--main-content-padding-bottom);
+  }
+
+  body {
+    padding: var(--layout-padding-mobile);
+  }
+}
+
+/* Dark theme */
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
