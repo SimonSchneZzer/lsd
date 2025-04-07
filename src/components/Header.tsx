@@ -1,3 +1,7 @@
 export default function Header() {
-    return <header><h1>Page Title</h1></header>
-  }
+  return (
+    <header className="page-header">
+      <h1>Page Title</h1>
+    </header>
+  );
+}

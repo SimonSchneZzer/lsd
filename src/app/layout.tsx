@@ -23,7 +23,7 @@ export default function RootLayout({
             <SideNav />
           </aside>
 
-          <main className="main-content">
+          <main className="main-content glassCard">
             <Header />
             {children}
           </main>
