@@ -41,7 +41,7 @@ export default function AttendancePage() {
             console.log(`⏱️ ${event.summary} = ${durationMinutes}min → ${lessonUnits} EH`);
 
             return (
-              <li key={i} className="glassCard">
+              <li key={i}>
                 <p><strong>Summary:</strong> {event.summary}</p>
                 <p><strong>Duration:</strong> {duration} ({lessonUnits  } EH)</p>
               </li>

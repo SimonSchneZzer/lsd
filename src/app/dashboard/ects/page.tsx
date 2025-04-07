@@ -36,7 +36,7 @@ export default function ECTSPage() {
       ) : (
         <ul>
           {events.map((event, i) => (
-            <li key={i} className="glassCard">
+            <li key={i}>
                 <p><strong>Summary:</strong> {event.summary}</p>
                 <p><strong>Start:</strong> {event.dtstart}</p>
                 <p><strong>End:</strong> {event.dtend}</p>
