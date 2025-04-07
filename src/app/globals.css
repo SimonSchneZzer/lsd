@@ -1,3 +1,6 @@
+/* ========================
+   General Styles & Variables
+======================== */
 :root {
   --glass-bg: rgba(0, 0, 0, 0.5);
   --glass-color: #fff;
@@ -9,6 +12,7 @@
   --layout-padding-desktop: 20px;
   --layout-padding-mobile: 10px;
   --side-nav-width: 17em;
+  --side-nav-gap: 1rem;
   --main-content-padding-bottom: 4rem;
 }
 
@@ -17,6 +21,28 @@
     --glass-bg: rgba(255, 255, 255, 0.4);
     --glass-color: #000;
   }
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ========================
+   Reset & Base Styles
+======================== */
+* {
+  box-sizing: border-box;
+  list-style: none;
 }
 
 html,
@@ -35,17 +61,7 @@ body {
   padding: var(--layout-padding-desktop);
 }
 
-* {
-  box-sizing: border-box;
-  list-style: none;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
+h1, h2, h3, h4, h5, h6,
 ul {
   margin: 0;
   padding: 0;
@@ -56,39 +72,53 @@ a {
   text-decoration: none;
 }
 
+/* ========================
+   Component Styles
+======================== */
 .glassCard {
   background: var(--glass-bg);
   border-radius: var(--glass-radius);
   padding: var(--glass-padding);
   margin-bottom: var(--glass-margin-bottom);
-
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   color: var(--glass-color);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== Layout Styles ===== */
+/* ========================
+   Desktop Layout (default)
+======================== */
 .layout {
   display: flex;
   min-height: 100vh;
 }
 
 .side-nav {
-  display: block;
+  position: fixed;
+  z-index: 10;
+  top: var(--layout-padding-desktop);
+  bottom: var(--layout-padding-desktop);
   width: var(--side-nav-width);
+}
+
+.main-content {
+  flex-grow: 1;
+  margin-left: calc(var(--side-nav-width) + var(--side-nav-gap));
 }
 
 .bottom-nav {
   display: none;
 }
 
-.main-content {
-  flex-grow: 1;
-}
-
-/* Mobile styles */
+/* ========================
+   Mobile Layout
+======================== */
 @media (max-width: 768px) {
+  body {
+    padding: var(--layout-padding-mobile);
+  }
+
   .layout {
     flex-direction: column;
   }
@@ -97,11 +127,17 @@ a {
     display: none;
   }
 
+  .main-content {
+    margin-left: 0;
+    padding-bottom: var(--main-content-padding-bottom);
+  }
+
   .bottom-nav {
     display: block;
     position: fixed;
     bottom: 0;
-    width: 100%;
+    left: var(--layout-padding-mobile);
+    right: var(--layout-padding-mobile);
     z-index: 10;
   }
 
@@ -110,27 +146,4 @@ a {
     justify-content: space-around;
     padding: 1rem 0;
   }
-
-  .main-content {
-    padding-bottom: var(--main-content-padding-bottom);
-  }
-
-  body {
-    padding: var(--layout-padding-mobile);
-  }
-}
-
-/* Dark theme */
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
-
-@font-face {
-  font-family: 'Nunito';
-  src: url('/fonts/Nunito-VariableFont_wght.ttf') format('truetype');
-  font-weight: 100 1000;
-  font-style: normal;
-  font-display: swap;
 }
