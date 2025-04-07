@@ -21,43 +21,23 @@ export default function LoginPage() {
     if (result?.error) {
       setError('Invalid email or password');
     } else {
-      window.location.href = '/dashboard';
+      window.location.href = '/';
     }
   };
 
   const handleGoogleSignIn = async () => {
-    await signIn('google', { redirect: true, callbackUrl: '/dashboard' });
+    await signIn('google', { redirect: true, callbackUrl: '/' });
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-3xl font-bold mb-4">Login</h1>
-      <form onSubmit={handleSubmit} className="w-full max-w-sm mb-4">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="input"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="input"
-        />
-        {error && <p className="text-red-500">{error}</p>}
-        <button type="submit" className="btn">Login</button>
-      </form>
+    <div className="">
+      <h1 className="">Login</h1>
  
-      <div className="flex items-center space-x-2">
+      <div className="">
         <span>or</span>
         <button
           onClick={handleGoogleSignIn}
-          className="btn bg-blue-500 hover:bg-blue-700"
+          className=""
         >
           Sign in with Google
         </button>
