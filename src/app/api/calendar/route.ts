@@ -6,6 +6,9 @@ import { CalendarEvent } from "@/types/event";
 
 const ICS_URL =
   "https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=0585d8a091bb7998cf06eab5f28cd33b00c01d20";
+  //https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=ff24152e973da0f6f01c4d987e555974928a61f5 MMT mit wiederholungen
+  //https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=13ae6ec6701e4b6a4eea0131ec32541c780fe427 MMA
+  // MMT Master
 
 type ApiResponse = {
   events: CalendarEvent[];
