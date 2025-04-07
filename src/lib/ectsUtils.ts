@@ -39,10 +39,16 @@ export function flattenMapping(mappingData: any): Record<string, number> {
     return flattened;
   }
   
-  export function getEctsValue(summary: string, mapping: Record<string, number>): number {
+  export function getEctsMatch(
+    summary: string,
+    mapping: Record<string, number>
+  ): { ects: number; courseId: string | null } {
     const normalizedSummary = summary.toLowerCase().replace(/\s+/g, '');
-    const match = Object.keys(mapping).find((key) =>
+    const matchedKey = Object.keys(mapping).find((key) =>
       normalizedSummary.includes(key.toLowerCase().replace(/\s+/g, ''))
     );
-    return match ? mapping[match] : 0;
+  
+    return matchedKey
+      ? { ects: mapping[matchedKey], courseId: matchedKey }
+      : { ects: 0, courseId: null };
   }

@@ -5,4 +5,5 @@ export type CalendarEvent = {
     durationMinutes: number;
     lessonUnits: number;
     ects: number;
+    courseId?: string;
   };

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import ectsMappingData from "../../../data/ectsMapping.json";
 import { getDurationMinutes, estimateLessonUnits } from "@/lib/icsUtils";
-import { flattenMapping, getEctsValue } from "@/lib/ectsUtils";
+import { flattenMapping, getEctsMatch } from "@/lib/ectsUtils";
 import { CalendarEvent } from "@/types/event";
 
 const ICS_URL =
@@ -43,20 +43,21 @@ export async function GET() {
 
         if (isGuestLecture || isFullDay) return null;
 
-        const ects = getEctsValue(summary, flattenedMapping);
-        if (ects === 0) unmatchedSummaries.push(summary);
+const { ects, courseId } = getEctsMatch(summary, flattenedMapping);
+if (ects === 0) unmatchedSummaries.push(summary);
 
-        const lessonUnits = estimateLessonUnits(durationMinutes);
+const lessonUnits = estimateLessonUnits(durationMinutes);
 
-        return {
-          summary,
-          description,
-          dtstart,
-          dtend,
-          durationMinutes,
-          lessonUnits,
-          ects,
-        };
+return {
+  summary,
+  description,
+  dtstart,
+  dtend,
+  durationMinutes,
+  lessonUnits,
+  ects,
+  courseId, // ← NEW!
+};
       })
       .filter(Boolean) as CalendarEvent[];
 
