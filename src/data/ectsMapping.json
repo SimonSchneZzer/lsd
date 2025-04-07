@@ -1,0 +1,111 @@
+{
+    "semester1": [
+      { "name": "Lineare Algebra", "ects": 5 },
+      { "name": "Einführung Programmierung", "ects": 5 },
+      { "name": "Einführung Multimedia / Computernetzwerke", "ects": 5 },
+      { "name": "Webprogrammierung / Datenbanken", "ects": 5 },
+      { "name": "Konzeptentwicklung", "ects": 2.5 },
+      { "name": "Technical English", "ects": 2 },
+      { "name": "Mediengestaltung / 3D Prototyping u. Scripting", "ects": 5 },
+      { "name": "Personaler Reflexionsprozess", "ects": 0.5 }
+    ],
+    "semester2": [
+      { "name": "Analysis", "ects": 5 },
+      { "name": "Algorithmen und Datenstrukturen", "ects": 5 },
+      { "name": "Webprogrammierung", "ects": 5 },
+      { "name": "Grundlagen Game Development", "ects": 2.5 },
+      { "name": "Grundlagen Human-Computer Interaction", "ects": 2.5 },
+      { "name": "Multimediaprojekt", "ects": 4 },
+      { "name": "Grundlagen Betriebssysteme", "ects": 2.5 },
+      { "name": "Praxis Software Development Tools", "ects": 1.5 },
+      { "name": "Einführung Präsentationstechniken", "ects": 1.5 },
+      { "name": "Personaler Reflexionsprozess", "ects": 0.5 }
+    ],
+    "semester3": {
+      "common": [
+        { "name": "Grundlagen Machine Learning", "ects": 2.5 },
+        { "name": "Kryptographie und Datensicherheit", "ects": 2.5 },
+        { "name": "Software Design Pattern", "ects": 2.5 },
+        { "name": "Software Projektmanagement", "ects": 2.5 }
+      ],
+      "schwerpunkt": {
+        "web": [
+          { "name": "Backend Development" },
+          { "name": "Content Management Systems" },
+          { "name": "Frontend Development" },
+          { "name": "Web Operations" },
+          { "name": "Interface Design" }
+        ],
+        "game": [
+          { "name": "Game Development" },
+          { "name": "Computergrafik" },
+          { "name": "Computer Vision" }
+        ]
+      },
+      "commonAfterSchwerpunkt": [
+        { "name": "Multimediaprojekt", "ects": 15 },
+        {
+          "name": "Ergänzung: Creative Making and Digital Fabrication, Live-Streaming and On-Air-Production, Native Mobile Applications, Game Studies and Game Design",
+          "ects": 2.5
+        },
+        { "name": "Teamorientierter Reflexionsprozess", "ects": 0.5 },
+        { "name": "Wiss. Arbeiten und Forschungsmethoden", "ects": 2 }
+      ]
+    },
+    "semester4": {
+      "common": [
+        { "name": "Software Architektur", "ects": 2.5 },
+        { "name": "Concurrent & Distributed Systems", "ects": 2.5 }
+      ],
+      "schwerpunkt": {
+        "web": [
+          { "name": "Full Stack Development" },
+          { "name": "Cloud Operations" },
+          { "name": "Human-Centred Design" }
+        ],
+        "game": [
+          { "name": "Game Development" },
+          { "name": "Game Production Environments" },
+          { "name": "Mixed Reality" }
+        ]
+      },
+      "commonAfterSchwerpunkt": [
+        { "name": "Multimediaprojekt / Interdisciplinary Hackathon", "ects": 18 },
+        {
+          "name": "Ergänzung: Praxis Machine Learning, Ethical Hacking, Information Visualisation, Game Studies and Game Design",
+          "ects": 2.5
+        },
+        { "name": "Teamorientierter Reflexionsprozess", "ects": 0.5 },
+        { "name": "Seminararbeit aus Informatik", "ects": 4 }
+      ]
+    },
+    "semester5": [
+      { "name": "Berufspraktikum", "ects": 24 },
+      { "name": "Berufspraktikum: Begleitlehrveranstaltung", "ects": 0.5 },
+      { "name": "Bachelorarbeit: Themenfindung und Exposé", "ects": 1.5 },
+      { "name": "Multimediaprojekt: Vorbereitung", "ects": 2.5 },
+      { "name": "Medien, Technik und Gesellschaft", "ects": 1.5 }
+    ],
+    "semester6": {
+      "schwerpunkt": {
+        "web": [
+          { "name": "Business of Web" },
+          { "name": "Information Retrieval" },
+          { "name": "Ausgewählte Kapitel" }
+        ],
+        "game": [
+          { "name": "Business of Games" },
+          { "name": "Augmented & Virtual Reality" },
+          { "name": "Ausgewählte Kapitel" }
+        ]
+      },
+      "commonAfterSchwerpunkt": [
+        { "name": "Multimediaprojekt", "ects": 15.5 },
+        { "name": "Teamorientierter Reflexionsprozess", "ects": 0.5 },
+        { "name": "Unternehmerische Grundlagen und Recht", "ects": 3 },
+        { "name": "Gastvorträge: Emerging Technologies", "ects": 1 },
+        { "name": "Bachelorarbeit und Begleitlehrveranstaltung", "ects": 9 },
+        { "name": "Bachelorprüfung", "ects": 0 }
+      ]
+    }
+  }
