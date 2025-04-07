@@ -48,7 +48,6 @@ export default function ECTSPage() {
 
   return (
     <div>
-      <h1>ECTS</h1>
       {loading ? (
         <p>Loading events...</p>
       ) : events.length === 0 ? (
