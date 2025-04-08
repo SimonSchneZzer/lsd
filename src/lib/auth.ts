@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "@/lib/prisma"; 
+import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 export const authOptions = {
@@ -19,10 +19,7 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const { email, password } = credentials as {
-          email: string;
-          password: string;
-        };
+        const { email, password } = credentials as { email: string; password: string };
         const user = await prisma.user.findUnique({
           where: { email },
         });
@@ -36,13 +33,13 @@ export const authOptions = {
         if (!isValidPassword) {
           throw new Error("Invalid password");
         }
-        return user;
+        // Gib ein Objekt mit mindestens einer id zurück.
+        return { id: user.id, email: user.email, name: user.name, image: user.image };
       },
     }),
   ],
-  
+  debug: true,
 };
 
 const handler = NextAuth(authOptions);
-
 export default handler;

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -24,7 +25,19 @@ export default function RegisterPage() {
         throw new Error("Failed to register");
       }
 
-      router.push("/profile");
+      const signInResult = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+        callbackUrl: "/profile",
+      });
+      console.log("signIn result:", signInResult);
+
+      if (signInResult && !signInResult.error) {
+        router.push("/profile");
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     } catch (error) {
       setError("Registration failed. Please try again.");
     }
