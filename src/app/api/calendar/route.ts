@@ -5,8 +5,8 @@ import { flattenMapping, getEctsMatch } from "@/lib/ectsUtils";
 import { CalendarEvent } from "@/types/event";
 
 const ICS_URL =
-  "https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=13ae6ec6701e4b6a4eea0131ec32541c780fe427"; //MMA
-//https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=0585d8a091bb7998cf06eab5f28cd33b00c01d20 MMT
+//  "https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=13ae6ec6701e4b6a4eea0131ec32541c780fe427"; //MMA
+"https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=0585d8a091bb7998cf06eab5f28cd33b00c01d20"; // MMT
 //https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=ff24152e973da0f6f01c4d987e555974928a61f5 MMT mit wieder
 
 type ApiResponse = {
@@ -14,11 +14,14 @@ type ApiResponse = {
   totalEcts: number;
 };
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const res = await fetch(ICS_URL);
+    // Query-Parameter aus dem Request auslesen
+    const { searchParams } = new URL(request.url);
+    const icsUrl = searchParams.get('icsUrl') || ICS_URL;
+    
+    const res = await fetch(icsUrl);
     let icsData = await res.text();
-
     // Normalize and unfold lines
     icsData = icsData.replace(/\r\n/g, "\n").replace(/\n[ \t]/g, "");
     const eventBlocks = icsData.match(/BEGIN:VEVENT([\s\S]*?)END:VEVENT/g);
