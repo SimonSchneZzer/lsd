@@ -20,17 +20,17 @@ export default function AttendancePage() {
         const events: CalendarEvent[] = data.events || [];
 
         const grouped = events.reduce((acc, event) => {
-          if (!event.courseId) return acc;
+          const id = event.courseId || event.summary; // fallback key
 
-          if (!acc[event.courseId]) {
-            acc[event.courseId] = {
-              courseId: event.courseId,
+          if (!acc[id]) {
+            acc[id] = {
+              courseId: id,
               summary: event.summary,
               totalLessonUnits: 0,
             };
           }
 
-          acc[event.courseId].totalLessonUnits += event.lessonUnits;
+          acc[id].totalLessonUnits += event.lessonUnits;
           return acc;
         }, {} as Record<string, GroupedEvent>);
 
