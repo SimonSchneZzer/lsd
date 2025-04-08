@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CalendarEvent } from '@/types/event';
+import Spinner from '@/components/Spinner';
 
 type GroupedEvent = {
   courseId: string;
@@ -45,7 +46,7 @@ export default function ECTSPage() {
   return (
     <div>
       {loading ? (
-        <p>Loading events...</p>
+        <Spinner />
       ) : groupedEvents.length === 0 ? (
         <p>No events found.</p>
       ) : (
