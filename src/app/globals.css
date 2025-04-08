@@ -80,6 +80,7 @@ h1 {
   font-size: 1.75rem; /* 28px */
   font-weight: 800;
   letter-spacing: -0.5px;
+  margin-bottom: 1.5rem;
 }
 
 h2 {
@@ -120,7 +121,6 @@ li {
   background: var(--glass-bg);
   border-radius: var(--glass-radius);
   padding: var(--glass-padding);
-  margin-bottom: var(--glass-margin-bottom);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   color: var(--glass-color);
@@ -132,7 +132,7 @@ li {
 ======================== */
 .layout {
   display: flex;
-  min-height: 100vh;
+  min-height: calc(100vh - 2 * var(--layout-padding-desktop));
 }
 
 .side-nav {
@@ -162,6 +162,8 @@ li {
 
   .layout {
     flex-direction: column;
+  min-height: calc(100vh - 2 * var(--layout-padding-mobile));
+
   }
 
   .side-nav {
@@ -183,7 +185,7 @@ li {
   .bottom-nav {
     display: block;
     position: fixed;
-    bottom: 0;
+    bottom: var(--layout-padding-mobile);
     left: var(--layout-padding-mobile);
     right: var(--layout-padding-mobile);
     z-index: 10;

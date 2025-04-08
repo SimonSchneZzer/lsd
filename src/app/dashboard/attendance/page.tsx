@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CalendarEvent } from '@/types/event';
 import '@/styles/progressbar.css';
+import Spinner from '@/components/Spinner';
 
 type GroupedEvent = {
   courseId: string;
@@ -59,9 +60,9 @@ export default function AttendancePage() {
   };
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <div>
       {loading ? (
-        <p>Loading events...</p>
+        <Spinner />
       ) : groupedEvents.length === 0 ? (
         <p>No events found.</p>
       ) : (
@@ -71,9 +72,9 @@ export default function AttendancePage() {
 
           return (
             <div key={event.courseId} className="course-block">
-              <p className="course-title">
-                {event.summary.replace(/^.*? - /, '')}
-              </p>
+              <h2>
+                <b>{event.summary.replace(/^.*? - /, '')}</b>
+              </h2>
 
               <div className="progress-bar">
                 <div
@@ -90,7 +91,7 @@ export default function AttendancePage() {
                   >
                     −
                   </button>
-                  <span style={{ fontSize: '0.95rem' }}>
+                  <span>
                     {missed} EH missed of {event.totalLessonUnits} EH
                   </span>
                   <button
