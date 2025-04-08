@@ -6,8 +6,8 @@ import { CalendarEvent } from "@/types/event";
 
 const ICS_URL =
   "https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=13ae6ec6701e4b6a4eea0131ec32541c780fe427"; //MMA
-  //https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=0585d8a091bb7998cf06eab5f28cd33b00c01d20 MMT
-  //https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=ff24152e973da0f6f01c4d987e555974928a61f5 MMT mit wieder
+//https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=0585d8a091bb7998cf06eab5f28cd33b00c01d20 MMT
+//https://myplan.fh-salzburg.ac.at/de/events/ical.php?action=ical&token=ff24152e973da0f6f01c4d987e555974928a61f5 MMT mit wieder
 
 type ApiResponse = {
   events: CalendarEvent[];
@@ -45,21 +45,21 @@ export async function GET() {
 
         if (isGuestLecture || isFullDay) return null;
 
-const { ects, courseId } = getEctsMatch(summary, flattenedMapping);
-if (ects === 0) unmatchedSummaries.push(summary);
+        const { ects, courseId } = getEctsMatch(summary, flattenedMapping);
+        if (ects === 0) unmatchedSummaries.push(summary);
 
-const lessonUnits = estimateLessonUnits(durationMinutes);
+        const lessonUnits = estimateLessonUnits(durationMinutes);
 
-return {
-  summary,
-  description,
-  dtstart,
-  dtend,
-  durationMinutes,
-  lessonUnits,
-  ects,
-  courseId,
-};
+        return {
+          summary,
+          description,
+          dtstart,
+          dtend,
+          durationMinutes,
+          lessonUnits,
+          ects,
+          courseId,
+        };
       })
       .filter(Boolean) as CalendarEvent[];
 

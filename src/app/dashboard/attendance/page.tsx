@@ -58,6 +58,7 @@ export default function AttendancePage() {
     });
   };
 
+<<<<<<< HEAD
   // ...
 return (
   <div>
@@ -82,4 +83,58 @@ return (
     )}
   </div>
 );
+=======
+  return (
+    <div>
+      {loading ? (
+        <Spinner />
+      ) : groupedEvents.length === 0 ? (
+        <p>No events found.</p>
+      ) : (
+        groupedEvents.map((event) => {
+          const missed = missedEH[event.courseId] || 0;
+          const percentageMissed = Math.min(100, (missed / event.totalLessonUnits) * 100);
+
+          return (
+            <div key={event.courseId} className="course-block">
+              <h2>
+                <b>{event.summary.replace(/^.*? - /, '')}</b>
+              </h2>
+
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{ width: `${percentageMissed}%` }}
+                />
+              </div>
+
+              <div className="control-bar">
+                <div className="control-row">
+                  <button
+                    onClick={() => handleChange(event.courseId, -1)}
+                    className="control-button"
+                  >
+                    −
+                  </button>
+                  <span>
+                    {missed} EH missed of {event.totalLessonUnits} EH
+                  </span>
+                  <button
+                    onClick={() => handleChange(event.courseId, 1)}
+                    className="control-button"
+                  >
+                    +
+                  </button>
+                </div>
+                <p className="percentage-label">
+                  {percentageMissed.toFixed(0)}% missed
+                </p>
+              </div>
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+>>>>>>> fa1cccbcb15bc44d92bac024d4072fd270118447
 }
