@@ -1,23 +1,40 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { formatDuration, getDurationMinutes, estimateLessonUnits } from '@/lib/icsUtils';
+import { CalendarEvent } from '@/types/event';
 
-type Event = {
+type GroupedEvent = {
+  courseId: string;
   summary: string;
-  dtstart: string;
-  dtend: string;
+  totalLessonUnits: number;
 };
 
 export default function AttendancePage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [groupedEvents, setGroupedEvents] = useState<GroupedEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/calendar')
       .then((res) => res.json())
       .then((data) => {
-        setEvents(data.events || []);
+        const events: CalendarEvent[] = data.events || [];
+
+        const grouped = events.reduce((acc, event) => {
+          const id = event.courseId || event.summary; // fallback key
+
+          if (!acc[id]) {
+            acc[id] = {
+              courseId: id,
+              summary: event.summary,
+              totalLessonUnits: 0,
+            };
+          }
+
+          acc[id].totalLessonUnits += event.lessonUnits;
+          return acc;
+        }, {} as Record<string, GroupedEvent>);
+
+        setGroupedEvents(Object.values(grouped));
         setLoading(false);
       })
       .catch((err) => {
@@ -30,23 +47,16 @@ export default function AttendancePage() {
     <div>
       {loading ? (
         <p>Loading events...</p>
-      ) : events.length === 0 ? (
+      ) : groupedEvents.length === 0 ? (
         <p>No events found.</p>
       ) : (
         <ul>
-          {events.map((event, i) => {
-            const duration = formatDuration(event.dtstart, event.dtend);
-            const durationMinutes = getDurationMinutes(event.dtstart, event.dtend);
-            const lessonUnits = estimateLessonUnits(durationMinutes);
-            console.log(`⏱️ ${event.summary} = ${durationMinutes}min → ${lessonUnits} EH`);
-
-            return (
-              <li key={i}>
-                <p><strong>Summary:</strong> {event.summary}</p>
-                <p><strong>Duration:</strong> {duration} ({lessonUnits  } EH)</p>
-              </li>
-            );
-          })}
+          {groupedEvents.map((event) => (
+            <li key={event.courseId} className="mb-4">
+              <p><strong>Summary:</strong> {event.summary.replace(/^.*? - /, '')}</p>
+              <p><strong>Total EH:</strong> {event.totalLessonUnits}</p>
+            </li>
+          ))}
         </ul>
       )}
     </div>

@@ -1,24 +1,39 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { formatDuration } from '@/lib/icsUtils';
+import { CalendarEvent } from '@/types/event';
 
-type Event = {
+type GroupedEvent = {
+  courseId: string;
   summary: string;
-  dtstart: string;
-  dtend: string;
   ects: number;
 };
 
 export default function ECTSPage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [groupedEvents, setGroupedEvents] = useState<GroupedEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/calendar')
       .then((res) => res.json())
       .then((data) => {
-        setEvents(data.events || []);
+        const events: CalendarEvent[] = data.events || [];
+
+        const grouped: Record<string, GroupedEvent> = {};
+
+        for (const event of events) {
+          if (!event.courseId) continue;
+
+          if (!grouped[event.courseId]) {
+            grouped[event.courseId] = {
+              courseId: event.courseId,
+              summary: event.summary,
+              ects: event.ects,
+            };
+          }
+        }
+
+        setGroupedEvents(Object.values(grouped));
         setLoading(false);
       })
       .catch((err) => {
@@ -31,20 +46,18 @@ export default function ECTSPage() {
     <div>
       {loading ? (
         <p>Loading events...</p>
-      ) : events.length === 0 ? (
+      ) : groupedEvents.length === 0 ? (
         <p>No events found.</p>
       ) : (
         <ul>
-          {events.map((event, i) => (
-            <li key={i}>
-                <p><strong>Summary:</strong> {event.summary}</p>
-                <p><strong>Start:</strong> {event.dtstart}</p>
-                <p><strong>End:</strong> {event.dtend}</p>
-                <p><strong>Duration:</strong> {formatDuration(event.dtstart, event.dtend)}</p>
-                <p><strong>ECTS:</strong> {event.ects}</p>
+          {groupedEvents.map((event) => (
+            <li key={event.courseId} className="mb-4">
+              <p><strong>Summary:</strong> {event.summary.replace(/^.*? - /, '')}</p>
+              <p><strong>ECTS:</strong> {event.ects}</p>
             </li>
           ))}
         </ul>
       )}
     </div>
-  )};
+  );
+}
