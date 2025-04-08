@@ -11,13 +11,11 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
     const result = await signIn('credentials', {
       redirect: false,
       email,
       password,
     });
-
     if (result?.error) {
       setError('Invalid email or password');
     } else {
@@ -30,18 +28,40 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="">
-      <h1 className="">Login</h1>
- 
-      <div className="">
-        <span>or</span>
-        <button
-          onClick={handleGoogleSignIn}
-          className=""
-        >
-          Sign in with Google
-        </button>
-      </div>
-    </div>
+    <>
+      <h1>Login</h1>
+      
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="email">Email:</label>
+        <input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="email@example.com"
+          required
+        />
+        <br />
+
+        <label htmlFor="password">Password:</label>
+        <input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="********"
+          required
+        />
+        <br />
+
+        <button type="submit">Login with Email</button>
+      </form>
+
+      <p>or</p>
+
+      <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+
+      {error && <p>{error}</p>}
+    </>
   );
 }
