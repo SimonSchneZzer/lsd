@@ -20,9 +20,7 @@ export const authOptions = {
       },
       async authorize(credentials) {
         const { email, password } = credentials as { email: string; password: string };
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
+        const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {
           throw new Error("No user found with the given email");
         }
@@ -33,11 +31,28 @@ export const authOptions = {
         if (!isValidPassword) {
           throw new Error("Invalid password");
         }
-        // Gib ein Objekt mit mindestens einer id zurück.
+        // Gib ein Objekt zurück, das mindestens id, email, name und image enthält.
         return { id: user.id, email: user.email, name: user.name, image: user.image };
       },
     }),
   ],
+  session: {
+    strategy: "jwt" as const,  // oder: strategy: "jwt" as "jwt"
+  },
+  cookies: {
+    sessionToken: {
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Secure-next-auth.session-token"
+          : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   debug: true,
 };
 

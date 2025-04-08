@@ -26,15 +26,15 @@ export default function RegisterPage() {
       }
 
       const signInResult = await signIn("credentials", {
-        redirect: false,
+        redirect: true,
         email,
         password,
-        callbackUrl: "/profile",
+        callbackUrl: "/",
       });
       console.log("signIn result:", signInResult);
 
       if (signInResult && !signInResult.error) {
-        router.push("/profile");
+        router.push("/");
       } else {
         setError("Registration failed. Please try again.");
       }
