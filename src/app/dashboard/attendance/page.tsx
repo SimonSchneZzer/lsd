@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { CalendarEvent } from '@/types/event';
-import '@/styles/progressbar.css';
+import Spinner from '@/components/Spinner';
+import ProgressBar from '@/components/ProgressBar/ProgressBar';
+
 
 type GroupedEvent = {
   courseId: string;
@@ -23,7 +25,6 @@ export default function AttendancePage() {
 
         const grouped = events.reduce((acc, event) => {
           const id = event.courseId || event.summary;
-
           if (!acc[id]) {
             acc[id] = {
               courseId: id,
@@ -31,7 +32,6 @@ export default function AttendancePage() {
               totalLessonUnits: 0,
             };
           }
-
           acc[id].totalLessonUnits += event.lessonUnits;
           return acc;
         }, {} as Record<string, GroupedEvent>);
@@ -58,56 +58,28 @@ export default function AttendancePage() {
     });
   };
 
-  return (
-    <div style={{ padding: '1rem' }}>
-      {loading ? (
-        <p>Loading events...</p>
-      ) : groupedEvents.length === 0 ? (
-        <p>No events found.</p>
-      ) : (
-        groupedEvents.map((event) => {
-          const missed = missedEH[event.courseId] || 0;
-          const percentageMissed = Math.min(100, (missed / event.totalLessonUnits) * 100);
-
-          return (
-            <div key={event.courseId} className="course-block">
-              <p className="course-title">
-                {event.summary.replace(/^.*? - /, '')}
-              </p>
-
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${percentageMissed}%` }}
-                />
-              </div>
-
-              <div className="control-bar">
-                <div className="control-row">
-                  <button
-                    onClick={() => handleChange(event.courseId, -1)}
-                    className="control-button"
-                  >
-                    −
-                  </button>
-                  <span style={{ fontSize: '0.95rem' }}>
-                    {missed} EH missed of {event.totalLessonUnits} EH
-                  </span>
-                  <button
-                    onClick={() => handleChange(event.courseId, 1)}
-                    className="control-button"
-                  >
-                    +
-                  </button>
-                </div>
-                <p className="percentage-label">
-                  {percentageMissed.toFixed(0)}% missed
-                </p>
-              </div>
-            </div>
-          );
-        })
-      )}
-    </div>
-  );
+  // ...
+return (
+  <div>
+    {loading ? (
+      <Spinner />
+    ) : groupedEvents.length === 0 ? (
+      <p>No events found.</p>
+    ) : (
+      groupedEvents.map((event) => {
+        const missed = missedEH[event.courseId] || 0;
+        return (
+          <ProgressBar
+            key={event.courseId}
+            summary={event.summary}
+            missed={missed}
+            totalLessonUnits={event.totalLessonUnits}
+            onIncrement={() => handleChange(event.courseId, 1)}
+            onDecrement={() => handleChange(event.courseId, -1)}
+          />
+        );
+      })
+    )}
+  </div>
+);
 }
