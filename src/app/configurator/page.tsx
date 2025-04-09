@@ -1,15 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import styles from "./ConfiguratorPage.module.css";
 import Spinner from "@/components/Spinner/Spinner";
-
-type EditableCourse = {
-  id?: string; // Wird von der Datenbank (Prisma) gesetzt
-  courseId: string;
-  summary: string;
-  lessonUnits: number;
-  ects: number;
-};
+import CourseCard, { EditableCourse } from "@/components/CourseCard/CourseCard";
 
 export default function ConfiguratorPage() {
   const [icsUrl, setIcsUrl] = useState("");
@@ -17,7 +11,7 @@ export default function ConfiguratorPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Diese Funktion lädt ausschließlich persistente Kurse aus der DB
+  // Funktion zum Laden persistenter Kurse aus der DB
   const loadPersistentCourses = async () => {
     setLoading(true);
     setError("");
@@ -35,8 +29,7 @@ export default function ConfiguratorPage() {
     }
   };
 
-  // Diese Funktion wird manuell angestoßen, wenn noch keine Kurse in der DB vorhanden sind
-  // oder der Benutzer einen ICS-Import durchführen will
+  // Funktion, um ICS-Daten zu holen, falls noch keine persistente Daten vorhanden sind
   const handleFetchICS = async () => {
     setLoading(true);
     setError("");
@@ -44,13 +37,9 @@ export default function ConfiguratorPage() {
       const response = await fetch(
         `/api/calendar?icsUrl=${encodeURIComponent(icsUrl)}`
       );
-      if (!response.ok)
-        throw new Error("Error fetching courses from ICS feed");
+      if (!response.ok) throw new Error("Error fetching courses from ICS feed");
       const icsData = await response.json();
-
-      // Nutze icsData.events als Grundlage
       const fetchedCourses = icsData.events;
-
       // Speichere jeden Kurs in der DB per POST an /api/courses
       for (const course of fetchedCourses) {
         const postRes = await fetch("/api/courses", {
@@ -62,7 +51,6 @@ export default function ConfiguratorPage() {
           console.error("Error saving course:", course);
         }
       }
-      // Nach dem Speichern erneut die persistierten Kurse laden
       await loadPersistentCourses();
     } catch (err) {
       console.error(err);
@@ -72,7 +60,7 @@ export default function ConfiguratorPage() {
     }
   };
 
-  // Beim Mounten der Seite werden automatisch persistente Kurse geladen
+  // Beim Mounten der Seite werden persistent gespeicherte Kurse geladen
   useEffect(() => {
     loadPersistentCourses();
   }, []);
@@ -157,9 +145,10 @@ export default function ConfiguratorPage() {
   };
 
   return (
-    <div className="configurator-container">
+    <div className={styles["configurator-container"]}>
       <h1>Calendar Configurator</h1>
-      <div className="url-input-container">
+      <div className={styles["url-input-container"]}>
+        {/* URL Input und Fetch Button */}
         <label htmlFor="icsUrl">ICS URL:</label>
         <input
           type="text"
@@ -168,77 +157,34 @@ export default function ConfiguratorPage() {
           onChange={(e) => setIcsUrl(e.target.value)}
           placeholder="Enter your ICS URL here..."
         />
-        {/* Button zum manuellen ICS-Import */}
         <button onClick={handleFetchICS}>Fetch Courses (from ICS)</button>
       </div>
-
+  
       {loading && <Spinner />}
       {error && <p className="error">{error}</p>}
-
+  
       {courses.length > 0 && (
         <>
-          <div className="courses-container">
+          <div className={styles["courses-container"]}>
             {courses.map((course, index) => (
-              <div key={index} className="course-card">
-                <div className="course-field">
-                  <label>Summary:</label>
-                  <input
-                    type="text"
-                    value={course.summary || ""}
-                    onChange={(e) =>
-                      handleChange(index, "summary", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="course-field">
-                  <label>Course ID:</label>
-                  <input
-                    type="text"
-                    value={course.courseId || ""}
-                    onChange={(e) =>
-                      handleChange(index, "courseId", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="course-field">
-                  <label>Lesson Units:</label>
-                  <input
-                    type="number"
-                    value={course.lessonUnits || ""}
-                    onChange={(e) =>
-                      handleChange(index, "lessonUnits", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="course-field">
-                  <label>ECTS:</label>
-                  <input
-                    type="number"
-                    value={course.ects || ""}
-                    onChange={(e) =>
-                      handleChange(index, "ects", e.target.value)
-                    }
-                  />
-                </div>
-                <button
-                  className="delete-button"
-                  onClick={() => handleDelete(index)}
-                >
-                  Delete Course
-                </button>
-              </div>
+              <CourseCard
+                key={index}
+                course={course}
+                index={index}
+                onChange={handleChange}
+                onDelete={handleDelete}
+              />
             ))}
           </div>
-          <div className="save-changes-container">
-            <button onClick={handleSaveAll}>Save Changes</button>
+          <div className={styles["changes-row"]}>
+            <div className={styles["add-course-container"]}>
+              <button onClick={handleAdd}>Add Course</button>
+            </div>
+            <div className={styles["save-changes-container"]}>
+              <button onClick={handleSaveAll}>Save Changes</button>
+            </div>
           </div>
         </>
-      )}
-
-      {courses.length > 0 && (
-        <div className="add-course-container">
-          <button onClick={handleAdd}>Add Course</button>
-        </div>
       )}
     </div>
   );

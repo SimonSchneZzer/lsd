@@ -14,6 +14,15 @@
   --side-nav-width: 20em;
   --side-nav-gap: 3rem;
   --main-content-padding-bottom: 4rem;
+
+  --primary-color: #F18F01;
+  --secondary-color: #2B09D2;
+  --tertiary-color: #DB162F;
+
+  --standard-font-size: 16px;
+  --standard-font-size-mobile: 14px;
+  --bigger-font-size: 20px;
+  --bigger-font-size-mobile: 18px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -113,6 +122,52 @@ li {
     font-size: 1.125rem; /* 18px */
   }
 }
+/* ========================
+   Input Styles
+======================== */
+/* mache die Input Felder transparent mit border radius und niht zu klein
+  verwende Farben aus dem Theme und geigenente definierte größen */
+
+input,
+textarea,
+select {
+  background: var(--glass-bg); 
+  border: 2px solid var(--glass-color);
+  border-radius: var(--glass-radius);
+  padding: 0.5rem;
+  font-size: inherit;
+  color: var(--glass-color);
+  width: 100%;
+  margin-bottom: var(--glass-margin-bottom);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: var(--bigger-font-size);
+}
+
+/* ========================
+  Button Styles
+======================== */
+button {
+  background: var(--glass-color);
+  border: 2px solid var(--glass-color);
+  border-radius: var(--glass-radius);
+  padding: 0.5rem 1rem;
+  font-size: inherit;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+button:hover {
+  background: white;
+  color: var(--glass-color);
+  border: 2px solid ;
+}
+
 
 /* ========================
    Component Styles
