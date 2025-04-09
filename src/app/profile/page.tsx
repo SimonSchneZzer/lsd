@@ -10,7 +10,11 @@ export default function ProfilePage() {
   }
 
   if (!session) {
-    return <p>You are not logged in.</p>;
+    return (
+    <>
+      <p> <u><a href="/auth/signin">Sign in</a></u> to access your profile. </p>
+    </>
+    );
   }
 
   return (
