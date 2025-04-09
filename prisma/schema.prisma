@@ -55,7 +55,7 @@ model Course {
   courseId    String
   summary     String
   lessonUnits Int
-  ects        Int
+  ects        Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   // Optional: Verknüpfung mit einem User, wenn es benutzerspezifisch ist:
