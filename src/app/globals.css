@@ -151,20 +151,20 @@ label {
   Button Styles
 ======================== */
 button {
-  background: var(--glass-color);
+  background: var(--glass-bg);
   border: 2px solid var(--glass-color);
   border-radius: var(--glass-radius);
   padding: 0.5rem 1rem;
   font-size: inherit;
-  color: white;
+  color: var(--glass-color);
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 
 button:hover {
-  background: white;
-  color: var(--glass-color);
+  background: var(--glass-color);
+  color: var(--glass-bg);
   border: 2px solid ;
 }
 

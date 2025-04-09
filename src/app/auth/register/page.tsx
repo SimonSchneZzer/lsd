@@ -45,7 +45,6 @@ export default function RegisterPage() {
 
   return (
     <>
-      <h1>Register</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">Emaio</label>

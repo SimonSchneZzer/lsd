@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "./ConfiguratorPage.module.css";
 import Spinner from "@/components/Spinner/Spinner";
 import CourseCard, { EditableCourse } from "@/components/CourseCard/CourseCard";
 
@@ -145,9 +144,7 @@ export default function ConfiguratorPage() {
   };
 
   return (
-    <div className={styles["configurator-container"]}>
-      <h1>Calendar Configurator</h1>
-      <div className={styles["url-input-container"]}>
+    <>
         {/* URL Input und Fetch Button */}
         <label htmlFor="icsUrl">ICS URL:</label>
         <input
@@ -158,14 +155,12 @@ export default function ConfiguratorPage() {
           placeholder="Enter your ICS URL here..."
         />
         <button onClick={handleFetchICS}>Fetch Courses (from ICS)</button>
-      </div>
   
       {loading && <Spinner />}
       {error && <p className="error">{error}</p>}
   
       {courses.length > 0 && (
         <>
-          <div className={styles["courses-container"]}>
             {courses.map((course, index) => (
               <CourseCard
                 key={index}
@@ -175,17 +170,10 @@ export default function ConfiguratorPage() {
                 onDelete={handleDelete}
               />
             ))}
-          </div>
-          <div className={styles["changes-row"]}>
-            <div className={styles["add-course-container"]}>
               <button onClick={handleAdd}>Add Course</button>
-            </div>
-            <div className={styles["save-changes-container"]}>
               <button onClick={handleSaveAll}>Save Changes</button>
-            </div>
-          </div>
         </>
       )}
-    </div>
+    </>
   );
 }

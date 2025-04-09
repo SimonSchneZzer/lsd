@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CalendarEvent } from '@/types/event';
-import Spinner from '@/components/Spinner/Spinner';
+import Spinner from '@/components/Spinner';
 import ProgressBar from '@/components/ProgressBar/ProgressBar';
 
 
