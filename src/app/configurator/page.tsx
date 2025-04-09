@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { CalendarEvent } from '@/types/event';
-import Spinner from '@/components/Spinner';
-
+import { useState, useEffect } from "react";
+import Spinner from "@/components/Spinner/Spinner";
 
 type EditableCourse = {
+  id?: string; // Wird von der Datenbank (Prisma) gesetzt
   courseId: string;
   summary: string;
   lessonUnits: number;
@@ -13,66 +12,70 @@ type EditableCourse = {
 };
 
 export default function ConfiguratorPage() {
-  const [icsUrl, setIcsUrl] = useState('');
+  const [icsUrl, setIcsUrl] = useState("");
   const [courses, setCourses] = useState<EditableCourse[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  const handleFetch = async () => {
+  // Diese Funktion lädt ausschließlich persistente Kurse aus der DB
+  const loadPersistentCourses = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
-      // For now, the API does not change with the ICS URL.
-      const response = await fetch('/api/calendar');
-      if (!response.ok) {
-        throw new Error('Error fetching calendar data');
-      }
-      const data = await response.json();
-      const events: CalendarEvent[] = data.events || [];
-
-      const grouped = events.reduce((acc, event) => {
-        // Attempt to split summary into two parts if it contains a ' - ' separator.
-        let parsedCourseId = event.courseId || event.summary;
-        let parsedSummary = event.summary;
-        if (event.summary.includes(' - ')) {
-          const parts = event.summary.split(' - ');
-          // Use the first segment as courseId, rest as summary.
-          parsedCourseId = parts[0].trim();
-          parsedSummary = parts.slice(1).join(' - ').trim();
-        }
-        // Use event.courseId as grouping key if available.
-        const id = event.courseId || parsedCourseId;
-
-        if (!acc[id]) {
-          acc[id] = {
-            courseId: parsedCourseId,
-            summary: parsedSummary,
-            lessonUnits: 0,
-            ects: event.ects || 0,
-          };
-        }
-
-        acc[id].lessonUnits += event.lessonUnits;
-        return acc;
-      }, {} as Record<string, EditableCourse>);
-
-      // Sort courses so that courses with identical summary and courseId are at the top.
-      const sortedCourses = Object.values(grouped).sort((a, b) => {
-        const aFaulty = a.summary === a.courseId;
-        const bFaulty = b.summary === b.courseId;
-        if (aFaulty && !bFaulty) return -1;
-        if (!aFaulty && bFaulty) return 1;
-        return 0;
-      });
-
-      setCourses(sortedCourses);
+      const persistentRes = await fetch("/api/courses");
+      if (!persistentRes.ok)
+        throw new Error("Error fetching persistent courses");
+      const persistentData = await persistentRes.json();
+      setCourses(persistentData.courses || []);
     } catch (err) {
       console.error(err);
-      setError('Error fetching courses. Please try again.');
+      setError("Error loading persistent courses.");
     } finally {
       setLoading(false);
     }
   };
+
+  // Diese Funktion wird manuell angestoßen, wenn noch keine Kurse in der DB vorhanden sind
+  // oder der Benutzer einen ICS-Import durchführen will
+  const handleFetchICS = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch(
+        `/api/calendar?icsUrl=${encodeURIComponent(icsUrl)}`
+      );
+      if (!response.ok)
+        throw new Error("Error fetching courses from ICS feed");
+      const icsData = await response.json();
+
+      // Nutze icsData.events als Grundlage
+      const fetchedCourses = icsData.events;
+
+      // Speichere jeden Kurs in der DB per POST an /api/courses
+      for (const course of fetchedCourses) {
+        const postRes = await fetch("/api/courses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(course),
+        });
+        if (!postRes.ok) {
+          console.error("Error saving course:", course);
+        }
+      }
+      // Nach dem Speichern erneut die persistierten Kurse laden
+      await loadPersistentCourses();
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching courses from ICS feed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Beim Mounten der Seite werden automatisch persistente Kurse geladen
+  useEffect(() => {
+    loadPersistentCourses();
+  }, []);
 
   const handleChange = (
     index: number,
@@ -81,8 +84,7 @@ export default function ConfiguratorPage() {
   ) => {
     setCourses((prev) => {
       const newCourses = [...prev];
-      if (field === 'lessonUnits' || field === 'ects') {
-        // Convert to number.
+      if (field === "lessonUnits" || field === "ects") {
         const parsed = Number(value);
         if (isNaN(parsed)) return prev;
         newCourses[index] = { ...newCourses[index], [field]: parsed };
@@ -93,20 +95,65 @@ export default function ConfiguratorPage() {
     });
   };
 
-  const handleDelete = (index: number) => {
-    setCourses((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleAdd = () => {
-    setCourses((prev) => [
-      ...prev,
-      {
-        courseId: '',
-        summary: '',
+  const handleAdd = async () => {
+    try {
+      const newCourseData = {
+        courseId: "",
+        summary: "",
         lessonUnits: 0,
         ects: 0,
-      },
-    ]);
+      };
+      const res = await fetch("/api/courses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCourseData),
+      });
+      if (!res.ok) throw new Error("Error creating course");
+      const data = await res.json();
+      setCourses((prev) => [...prev, data.course]);
+    } catch (err) {
+      console.error(err);
+      setError("Error adding course");
+    }
+  };
+
+  const handleDelete = async (index: number) => {
+    const courseToDelete = courses[index];
+    try {
+      if (courseToDelete && courseToDelete.id) {
+        const res = await fetch(`/api/courses/${courseToDelete.id}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) {
+          throw new Error("Error deleting course");
+        }
+      }
+      setCourses((prev) => prev.filter((_, i) => i !== index));
+    } catch (err) {
+      console.error(err);
+      setError("Error deleting course");
+    }
+  };
+
+  const handleSaveAll = async () => {
+    try {
+      for (const course of courses) {
+        if (course.id) {
+          const res = await fetch(`/api/courses/${course.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(course),
+          });
+          if (!res.ok) {
+            throw new Error(`Error updating course with id ${course.id}`);
+          }
+        }
+      }
+      alert("Courses saved to database");
+    } catch (err) {
+      console.error(err);
+      setError("Error saving courses");
+    }
   };
 
   return (
@@ -121,65 +168,71 @@ export default function ConfiguratorPage() {
           onChange={(e) => setIcsUrl(e.target.value)}
           placeholder="Enter your ICS URL here..."
         />
-        <button onClick={handleFetch}>Fetch Courses</button>
+        {/* Button zum manuellen ICS-Import */}
+        <button onClick={handleFetchICS}>Fetch Courses (from ICS)</button>
       </div>
 
       {loading && <Spinner />}
       {error && <p className="error">{error}</p>}
 
       {courses.length > 0 && (
-        <div className="courses-container">
-          {courses.map((course, index) => (
-            <div key={index} className="course-card">
-              <div className="course-field">
-                <label>Summary:</label>
-                <input
-                  type="text"
-                  value={course.summary}
-                  onChange={(e) =>
-                    handleChange(index, 'summary', e.target.value)
-                  }
-                />
+        <>
+          <div className="courses-container">
+            {courses.map((course, index) => (
+              <div key={index} className="course-card">
+                <div className="course-field">
+                  <label>Summary:</label>
+                  <input
+                    type="text"
+                    value={course.summary || ""}
+                    onChange={(e) =>
+                      handleChange(index, "summary", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="course-field">
+                  <label>Course ID:</label>
+                  <input
+                    type="text"
+                    value={course.courseId || ""}
+                    onChange={(e) =>
+                      handleChange(index, "courseId", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="course-field">
+                  <label>Lesson Units:</label>
+                  <input
+                    type="number"
+                    value={course.lessonUnits || ""}
+                    onChange={(e) =>
+                      handleChange(index, "lessonUnits", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="course-field">
+                  <label>ECTS:</label>
+                  <input
+                    type="number"
+                    value={course.ects || ""}
+                    onChange={(e) =>
+                      handleChange(index, "ects", e.target.value)
+                    }
+                  />
+                </div>
+                <button
+                  className="delete-button"
+                  onClick={() => handleDelete(index)}
+                >
+                  Delete Course
+                </button>
               </div>
-              <div className="course-field">
-                <label>Course ID:</label>
-                <input
-                  type="text"
-                  value={course.courseId}
-                  onChange={(e) =>
-                    handleChange(index, 'courseId', e.target.value)
-                  }
-                />
-              </div>
-              <div className="course-field">
-                <label>Lesson Units:</label>
-                <input
-                  type="number"
-                  value={course.lessonUnits}
-                  onChange={(e) =>
-                    handleChange(index, 'lessonUnits', e.target.value)
-                  }
-                />
-              </div>
-              <div className="course-field">
-                <label>ECTS:</label>
-                <input
-                  type="number"
-                  value={course.ects}
-                  onChange={(e) =>
-                    handleChange(index, 'ects', e.target.value)
-                  }
-                />
-              </div>
-              <button
-                className="delete-button"
-                onClick={() => handleDelete(index)}
-              >
-                Delete Course
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+          <div className="save-changes-container">
+            <button onClick={handleSaveAll}>Save Changes</button>
+          </div>
+        </>
       )}
 
       {courses.length > 0 && (
