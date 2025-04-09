@@ -18,19 +18,45 @@ export default function ConfiguratorPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Lädt persistente Kurse aus der Datenbank über den API-Endpunkt /api/courses
   const handleFetch = async () => {
     setLoading(true);
     setError('');
     try {
-      // Die eingegebene URL wird per Query-Parameter übergeben.
-      const response = await fetch(`/api/calendar?icsUrl=${encodeURIComponent(icsUrl)}`);
-      if (!response.ok) {
-        throw new Error('Error fetching courses');
+      // Zuerst prüfe, ob persistente Daten vorhanden sind:
+      const persistentRes = await fetch('/api/courses');
+      if (!persistentRes.ok) throw new Error('Error fetching persistent courses');
+      const persistentData = await persistentRes.json();
+  
+      if (persistentData.courses && persistentData.courses.length > 0) {
+        // Falls bereits Kurse in der DB gespeichert sind, benutze diese
+        setCourses(persistentData.courses);
+      } else {
+        // Falls noch keine persistente Daten existieren, hole die ICS-Daten:
+        const response = await fetch(`/api/calendar?icsUrl=${encodeURIComponent(icsUrl)}`);
+        if (!response.ok) throw new Error('Error fetching courses from ICS feed');
+        const icsData = await response.json();
+        
+        // Verwende icsData.events als Grundlage:
+        const fetchedCourses = icsData.events;
+  
+        // Speichere jeden Kurs in der Datenbank (z.B. per POST an /api/courses)
+        for (const course of fetchedCourses) {
+          const postRes = await fetch('/api/courses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(course),
+          });
+          if (!postRes.ok) {
+            console.error('Error saving course:', course);
+          }
+        }
+        
+        // Lese nach dem Speichern erneut die persistierten Kurse
+        const persistentRes2 = await fetch('/api/courses');
+        if (!persistentRes2.ok) throw new Error('Error fetching persistent courses');
+        const persistentData2 = await persistentRes2.json();
+        setCourses(persistentData2.courses);
       }
-      const data = await response.json();
-      // Setze den State mit dem Feld "events", das von der API zurückgegeben wird.
-      setCourses(data.events);
     } catch (err) {
       console.error(err);
       setError('Error fetching courses. Please try again.');
@@ -153,7 +179,7 @@ export default function ConfiguratorPage() {
                   <label>Summary:</label>
                   <input
                     type="text"
-                    value={course.summary}
+                    value={course.summary || ''}
                     onChange={(e) => handleChange(index, 'summary', e.target.value)}
                   />
                 </div>
@@ -161,7 +187,7 @@ export default function ConfiguratorPage() {
                   <label>Course ID:</label>
                   <input
                     type="text"
-                    value={course.courseId}
+                    value={course.courseId || ''}
                     onChange={(e) => handleChange(index, 'courseId', e.target.value)}
                   />
                 </div>
@@ -169,7 +195,7 @@ export default function ConfiguratorPage() {
                   <label>Lesson Units:</label>
                   <input
                     type="number"
-                    value={course.lessonUnits}
+                    value={course.lessonUnits || ''}
                     onChange={(e) => handleChange(index, 'lessonUnits', e.target.value)}
                   />
                 </div>
@@ -177,7 +203,7 @@ export default function ConfiguratorPage() {
                   <label>ECTS:</label>
                   <input
                     type="number"
-                    value={course.ects}
+                    value={course.ects || ''}
                     onChange={(e) => handleChange(index, 'ects', e.target.value)}
                   />
                 </div>
