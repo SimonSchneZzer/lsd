@@ -82,26 +82,15 @@ export default function ConfiguratorPage() {
     });
   };
 
-  const handleAdd = async () => {
-    try {
-      const newCourseData = {
-        courseId: "",
-        summary: "",
-        lessonUnits: 0,
-        ects: 0,
-      };
-      const res = await fetch("/api/courses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCourseData),
-      });
-      if (!res.ok) throw new Error("Error creating course");
-      const data = await res.json();
-      setCourses((prev) => [...prev, data.course]);
-    } catch (err) {
-      console.error(err);
-      setError("Error adding course");
-    }
+  const handleAdd = () => {
+    const newCourse: EditableCourse = {
+      // courseId bleibt leer, damit der Nutzer ihn füllen kann
+      courseId: "",
+      summary: "",
+      lessonUnits: 0,
+      ects: 0,
+    };
+    setCourses((prev) => [...prev, newCourse]);
   };
 
   const handleDelete = async (index: number) => {
@@ -134,6 +123,24 @@ export default function ConfiguratorPage() {
           if (!res.ok) {
             throw new Error(`Error updating course with id ${course.id}`);
           }
+        } else {
+          if (!course.courseId || course.courseId.trim() === "") {
+            setError("Course ID must not be empty for new courses.");
+            return;
+          }
+          const res = await fetch("/api/courses", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(course),
+          });
+          if (!res.ok) {
+            throw new Error("Error creating course");
+          }
+          const data = await res.json();
+
+          setCourses((prev) =>
+            prev.map((c) => (c === course ? data.course : c))
+          );
         }
       }
       alert("Courses saved to database");
@@ -143,53 +150,53 @@ export default function ConfiguratorPage() {
     }
   };
 
-// Reduziere das Array, sodass nur der erste Kurs für jede Course ID gespeichert wird.
-const uniqueCourses = Object.values(
-  courses.reduce((acc, course) => {
-    // Verwende courseId als Schlüssel – falls courseId nicht vorhanden ist, nutze summary.
-    const key = course.courseId || course.summary;
-    if (!acc[key]) {
-      acc[key] = course;
-    }
-    return acc;
-  }, {} as Record<string, EditableCourse>)
-);
+  // Reduziere das Array, sodass nur der erste Kurs für jede Course ID gespeichert wird.
+  const uniqueCourses = Object.values(
+    courses.reduce((acc, course) => {
+      // Verwende courseId als Schlüssel – falls courseId nicht vorhanden ist, nutze summary.
+      const key = course.courseId || course.summary;
+      if (!acc[key]) {
+        acc[key] = course;
+      }
+      return acc;
+    }, {} as Record<string, EditableCourse>)
+  );
 
-return (
-  <>
-    {/* URL Input und ICS Fetch Button */}
-    <label htmlFor="icsUrl">ICS URL:</label>
-    <input
-      type="text"
-      id="icsUrl"
-      value={icsUrl}
-      onChange={(e) => setIcsUrl(e.target.value)}
-      placeholder="Enter your ICS URL here..."
-    />
-    <button onClick={handleFetchICS}>Fetch Courses (from ICS)</button>
+  return (
+    <>
+      {/* URL Input und ICS Fetch Button */}
+      <label htmlFor="icsUrl">ICS URL:</label>
+      <input
+        type="text"
+        id="icsUrl"
+        value={icsUrl}
+        onChange={(e) => setIcsUrl(e.target.value)}
+        placeholder="Enter your ICS URL here..."
+      />
+      <button onClick={handleFetchICS}>Fetch Courses (from ICS)</button>
 
-    {loading && <Spinner />}
-    {error && <p className="error">{error}</p>}
+      {loading && <Spinner />}
+      {error && <p className="error">{error}</p>}
 
-    {uniqueCourses.length > 0 && (
-      <>
-        <div className="courses-container">
-          {uniqueCourses.map((course, index) => (
-            <CourseCard
-              key={course.id || index}
-              course={course}
-              index={index}
-              onChange={handleChange}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-        <div className="actions-row">
-          <button onClick={handleAdd}>Add Course</button>
-          <button onClick={handleSaveAll}>Save Changes</button>
-        </div>
-      </>
-    )}
-  </>
-);
+      {uniqueCourses.length > 0 && (
+        <>
+          <div className="courses-container">
+            {uniqueCourses.map((course, index) => (
+              <CourseCard
+                key={course.id || index}
+                course={course}
+                index={index}
+                onChange={handleChange}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+          <div className="actions-row">
+            <button onClick={handleAdd}>Add Course</button>
+            <button onClick={handleSaveAll}>Save Changes</button>
+          </div>
+        </>
+      )}
+    </>
+  );
 }

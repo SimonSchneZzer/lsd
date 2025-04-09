@@ -52,6 +52,7 @@ export default function CourseCard({ course, index, onChange, onDelete }: Course
           onChange={(e) => onChange(index, "ects", e.target.value)}
         />
       </div>
+      
       <button className="delete-button" onClick={() => onDelete(index)}>
         Delete Course
       </button>

@@ -65,7 +65,7 @@ model Course {
 
 model Attendance {
   id             String   @id @default(cuid())
-  courseId       String
+  courseId       String   @unique
   summary        String
   totalLessonUnits Int
   missedLessonUnits Int

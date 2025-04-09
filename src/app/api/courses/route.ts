@@ -8,7 +8,10 @@ export async function GET() {
     return NextResponse.json({ courses });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Error fetching courses" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error fetching courses" },
+      { status: 500 }
+    );
   }
 }
 
@@ -17,8 +20,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { courseId, summary, lessonUnits, ects } = body;
 
-    if (!courseId) {
-      return NextResponse.json({ error: "courseId must not be null" }, { status: 400 });
+    if (!courseId || courseId.trim() === "") {
+      return NextResponse.json(
+        { error: "courseId must not be empty" },
+        { status: 400 }
+      );
     }
 
     const course = await prisma.course.upsert({
@@ -36,9 +42,27 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ course }, { status: 201 });
+    const attendance = await prisma.attendance.upsert({
+        where: { courseId },
+        update: {
+          totalLessonUnits: course.lessonUnits,
+          summary,
+        },
+        create: {
+          courseId,
+          summary,
+          totalLessonUnits: course.lessonUnits,
+          missedLessonUnits: 0,
+          progress: 0,
+        },
+      });
+
+    return NextResponse.json({ course , attendance}, { status: 201 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Error creating/upserting course" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error creating/upserting course" },
+      { status: 500 }
+    );
   }
 }
