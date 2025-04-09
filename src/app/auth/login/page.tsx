@@ -29,8 +29,6 @@ export default function LoginPage() {
 
   return (
     <>
-      <h1>Login</h1>
-      
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">Email:</label>
         <input
@@ -49,7 +47,7 @@ export default function LoginPage() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="********"
+          placeholder="••••••••••"
           required
         />
         <br />
