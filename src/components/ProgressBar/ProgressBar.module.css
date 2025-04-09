@@ -45,4 +45,6 @@
 
 .control-button:hover {
     background-color: var(--glass-bg);
+    color: #fff;
+    border: none;
 }
