@@ -62,3 +62,18 @@ model Course {
   // userId      String
   // user        User     @relation(fields: [userId], references: [id])
 }
+
+model Attendance {
+  id             String   @id @default(cuid())
+  courseId       String
+  summary        String
+  totalLessonUnits Int
+  missedLessonUnits Int
+  progress       Float    
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Falls du sie mit einem User verknüpfen möchtest:
+  // userId         String
+  // user           User     @relation(fields: [userId], references: [id])
+}
