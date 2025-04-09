@@ -52,7 +52,7 @@ model VerificationToken {
 
 model Course {
   id          String   @id @default(cuid())
-  courseId    String
+  courseId    String   @unique
   summary     String
   lessonUnits Int
   ects        Float

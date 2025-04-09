@@ -143,37 +143,53 @@ export default function ConfiguratorPage() {
     }
   };
 
-  return (
-    <>
-        {/* URL Input und Fetch Button */}
-        <label htmlFor="icsUrl">ICS URL:</label>
-        <input
-          type="text"
-          id="icsUrl"
-          value={icsUrl}
-          onChange={(e) => setIcsUrl(e.target.value)}
-          placeholder="Enter your ICS URL here..."
-        />
-        <button onClick={handleFetchICS}>Fetch Courses (from ICS)</button>
-  
-      {loading && <Spinner />}
-      {error && <p className="error">{error}</p>}
-  
-      {courses.length > 0 && (
-        <>
-            {courses.map((course, index) => (
-              <CourseCard
-                key={index}
-                course={course}
-                index={index}
-                onChange={handleChange}
-                onDelete={handleDelete}
-              />
-            ))}
-              <button onClick={handleAdd}>Add Course</button>
-              <button onClick={handleSaveAll}>Save Changes</button>
-        </>
-      )}
-    </>
-  );
+// Reduziere das Array, sodass nur der erste Kurs für jede Course ID gespeichert wird.
+const uniqueCourses = Object.values(
+  courses.reduce((acc, course) => {
+    // Verwende courseId als Schlüssel – falls courseId nicht vorhanden ist, nutze summary.
+    const key = course.courseId || course.summary;
+    if (!acc[key]) {
+      acc[key] = course;
+    }
+    return acc;
+  }, {} as Record<string, EditableCourse>)
+);
+
+return (
+  <>
+    {/* URL Input und ICS Fetch Button */}
+    <label htmlFor="icsUrl">ICS URL:</label>
+    <input
+      type="text"
+      id="icsUrl"
+      value={icsUrl}
+      onChange={(e) => setIcsUrl(e.target.value)}
+      placeholder="Enter your ICS URL here..."
+    />
+    <button onClick={handleFetchICS}>Fetch Courses (from ICS)</button>
+
+    {loading && <Spinner />}
+    {error && <p className="error">{error}</p>}
+
+    {uniqueCourses.length > 0 && (
+      <>
+        <div className="courses-container">
+          {uniqueCourses.map((course, index) => (
+            <CourseCard
+              key={course.id || index}
+              course={course}
+              index={index}
+              onChange={handleChange}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+        <div className="actions-row">
+          <button onClick={handleAdd}>Add Course</button>
+          <button onClick={handleSaveAll}>Save Changes</button>
+        </div>
+      </>
+    )}
+  </>
+);
 }

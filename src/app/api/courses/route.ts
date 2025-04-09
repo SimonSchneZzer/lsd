@@ -1,39 +1,44 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+// GET: Alle Kurse abrufen
 export async function GET() {
   try {
     const courses = await prisma.course.findMany();
     return NextResponse.json({ courses });
   } catch (error) {
-    console.error("Error fetching courses:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error(error);
+    return NextResponse.json({ error: "Error fetching courses" }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
     const { courseId, summary, lessonUnits, ects } = body;
 
-    const newCourse = await prisma.course.create({
-      data: {
+    if (!courseId) {
+      return NextResponse.json({ error: "courseId must not be null" }, { status: 400 });
+    }
+
+    const course = await prisma.course.upsert({
+      where: { courseId },
+      update: {
+        lessonUnits: { increment: lessonUnits },
+        summary,
+        ects,
+      },
+      create: {
         courseId,
         summary,
         lessonUnits,
         ects,
       },
     });
-    return NextResponse.json({ course: newCourse }, { status: 201 });
-  } catch (error) { 
-    console.error("Error creating course:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ course }, { status: 201 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Error creating/upserting course" }, { status: 500 });
   }
 }
