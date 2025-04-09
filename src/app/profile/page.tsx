@@ -19,7 +19,6 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h1>Profile</h1>
       <p>
         <strong>Email:</strong> {session.user?.email || 'No email available'}
       </p>
