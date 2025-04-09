@@ -12,7 +12,7 @@ export default function ProfilePage() {
   if (!session) {
     return (
     <>
-      <p> <u><a href="/auth/signin">Sign in</a></u> to access your profile. </p>
+      <p> <u><a href="/auth/login">Sign in</a></u> or <u><a href="/auth/register">register</a></u> to access your profile. </p>
     </>
     );
   }

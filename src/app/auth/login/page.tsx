@@ -30,7 +30,7 @@ export default function LoginPage() {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="email">Email:</label>
+        <label htmlFor="email">Email</label>
         <input
           id="email"
           type="email"
@@ -41,7 +41,7 @@ export default function LoginPage() {
         />
         <br />
 
-        <label htmlFor="password">Password:</label>
+        <label htmlFor="password">Password</label>
         <input
           id="password"
           type="password"
@@ -58,6 +58,8 @@ export default function LoginPage() {
       <p>or</p>
 
       <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+
+      <p> Need an account? <u> <a href="/auth/register">Register here</a> </u></p>
 
       {error && <p>{error}</p>}
     </>

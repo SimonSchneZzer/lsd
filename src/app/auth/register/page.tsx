@@ -47,12 +47,13 @@ export default function RegisterPage() {
     <>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
-        <label htmlFor="email">Emaio</label>
+        <label htmlFor="email">Email</label>
         <input
           id="email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          placeholder="email@example.com"
           required
         />
         <br />
@@ -62,13 +63,14 @@ export default function RegisterPage() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••••"
           required
         />
         <br />
         <button type="submit">Register</button>
       </form>
       <p>
-        Already have an account? <a href="/auth/login">Login</a>
+        Already have an account? <u><a href="/auth/login">Login</a></u>
       </p>
     </>
   );
