@@ -34,6 +34,9 @@ export default function ProgressBar({
             {missed} EH missed of {totalLessonUnits} EH
           </span>
           <button onClick={onIncrement} className={styles['control-button']}>+</button>
+          <span className={styles['percentage']}>
+            {percentage.toFixed(2)}%
+          </span>
         </div>
       </div>
     </div>
