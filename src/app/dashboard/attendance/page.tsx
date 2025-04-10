@@ -1,53 +1,84 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { formatDuration, getDurationMinutes, estimateLessonUnits } from '@/lib/icsUtils';
+import Spinner from '@/components/Spinner';
+import ProgressBar from '@/components/ProgressBar/ProgressBar';
 
-type Event = {
+type AttendanceData = {
+  courseId: string;
   summary: string;
-  dtstart: string;
-  dtend: string;
+  totalLessonUnits: number;
+  missedLessonUnits: number;
 };
 
 export default function AttendancePage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const { data: session, status } = useSession();
+  const [attendanceData, setAttendanceData] = useState<AttendanceData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/calendar')
-      .then((res) => res.json())
-      .then((data) => {
-        setEvents(data.events || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Error fetching calendar:', err);
-        setLoading(false);
+    if (status === 'authenticated') {
+      fetch('/api/attendance')
+        .then((res) => res.json())
+        .then((data) => {
+          const attendance: AttendanceData[] = data.attendance || [];
+          setAttendanceData(attendance);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error('Error fetching attendance data:', err);
+          setLoading(false);
+        });
+    }
+  }, [status]);
+
+  if (status === 'loading' || loading) return <Spinner />;
+  if (!session) return <p>Please sign in to view your attendance.</p>;
+
+  const updateMissedLessonUnits = async (courseId: string, newValue: number) => {
+    try {
+      const res = await fetch(`/api/attendance/${courseId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ missedLessonUnits: newValue }),
       });
-  }, []);
+      if (!res.ok) {
+        throw new Error(`Failed to update missedLessonUnits for course ${courseId}`);
+      }
+    } catch (error) {
+      console.error('Error updating missedLessonUnits:', error);
+    }
+  };
+
+  const handleChange = (id: string, delta: number) => {
+    setAttendanceData((prev) =>
+      prev.map((item) => {
+        if (item.courseId === id) {
+          const newMissed = Math.max(0, item.missedLessonUnits + delta);
+          updateMissedLessonUnits(id, newMissed);
+          return { ...item, missedLessonUnits: newMissed };
+        }
+        return item;
+      })
+    );
+  };
 
   return (
     <div>
-      {loading ? (
-        <p>Loading events...</p>
-      ) : events.length === 0 ? (
-        <p>No events found.</p>
+      {attendanceData.length === 0 ? (
+        <p>No attendance data found.</p>
       ) : (
-        <ul>
-          {events.map((event, i) => {
-            const duration = formatDuration(event.dtstart, event.dtend);
-            const durationMinutes = getDurationMinutes(event.dtstart, event.dtend);
-            const lessonUnits = estimateLessonUnits(durationMinutes);
-            console.log(`⏱️ ${event.summary} = ${durationMinutes}min → ${lessonUnits} EH`);
-
-            return (
-              <li key={i}>
-                <p><strong>Summary:</strong> {event.summary}</p>
-                <p><strong>Duration:</strong> {duration} ({lessonUnits  } EH)</p>
-              </li>
-            );
-          })}
-        </ul>
+        attendanceData.map((item) => (
+          <ProgressBar
+            key={item.courseId}
+            summary={item.summary}
+            missed={item.missedLessonUnits}
+            totalLessonUnits={item.totalLessonUnits}
+            onIncrement={() => handleChange(item.courseId, 1)}
+            onDecrement={() => handleChange(item.courseId, -1)}
+          />
+        ))
       )}
     </div>
   );

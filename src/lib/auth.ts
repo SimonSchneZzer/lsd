@@ -39,6 +39,19 @@ export const authOptions = {
   session: {
     strategy: "jwt" as const,  // oder: strategy: "jwt" as "jwt"
   },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Stelle sicher, dass session.user.id gesetzt wird.
+      session.user.id = token.sub as string;
+      return session;
+    },
+  },
   cookies: {
     sessionToken: {
       name:
@@ -47,7 +60,7 @@ export const authOptions = {
           : "next-auth.session-token",
       options: {
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "lax" as "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production",
       },

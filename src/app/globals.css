@@ -14,6 +14,15 @@
   --side-nav-width: 20em;
   --side-nav-gap: 3rem;
   --main-content-padding-bottom: 4rem;
+
+  --primary-color: #F18F01;
+  --secondary-color: #2B09D2;
+  --tertiary-color: #DB162F;
+
+  --standard-font-size: 16px;
+  --standard-font-size-mobile: 14px;
+  --bigger-font-size: 20px;
+  --bigger-font-size-mobile: 18px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -80,11 +89,12 @@ h1 {
   font-size: 1.75rem; /* 28px */
   font-weight: 800;
   letter-spacing: -0.5px;
+  margin-bottom: 1.5rem;
 }
 
 h2 {
   font-size: 1.25rem; /* 20px */
-  font-weight: 300;
+  font-weight: 500;
   letter-spacing: -0.25px;
 }
 
@@ -112,6 +122,52 @@ li {
     font-size: 1.125rem; /* 18px */
   }
 }
+/* ========================
+   Input Styles
+======================== */
+/* mache die Input Felder transparent mit border radius und niht zu klein
+  verwende Farben aus dem Theme und geigenente definierte größen */
+
+input,
+textarea,
+select {
+  background: var(--glass-bg); 
+  border: 2px solid var(--glass-color);
+  border-radius: var(--glass-radius);
+  padding: 0.5rem;
+  font-size: inherit;
+  color: var(--glass-color);
+  width: 100%;
+  margin-bottom: var(--glass-margin-bottom);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: var(--bigger-font-size);
+}
+
+/* ========================
+  Button Styles
+======================== */
+button {
+  background: var(--glass-bg);
+  border: 2px solid var(--glass-color);
+  border-radius: var(--glass-radius);
+  padding: 0.5rem 1rem;
+  font-size: inherit;
+  color: var(--glass-color);
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+button:hover {
+  background: var(--glass-color);
+  color: var(--glass-bg);
+  border: 2px solid ;
+}
+
 
 /* ========================
    Component Styles
@@ -120,7 +176,6 @@ li {
   background: var(--glass-bg);
   border-radius: var(--glass-radius);
   padding: var(--glass-padding);
-  margin-bottom: var(--glass-margin-bottom);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   color: var(--glass-color);
@@ -132,7 +187,7 @@ li {
 ======================== */
 .layout {
   display: flex;
-  min-height: 100vh;
+  min-height: calc(100vh - 2 * var(--layout-padding-desktop));
 }
 
 .side-nav {
@@ -141,6 +196,28 @@ li {
   top: var(--layout-padding-desktop);
   bottom: var(--layout-padding-desktop);
   width: var(--side-nav-width);
+}
+
+.side-nav li {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.3rem;
+  cursor: pointer;
+}
+
+.side-nav li::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0.2em;
+  width: 0%;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease-in-out;
+}
+
+.side-nav li:hover::after {
+  width: 100%;
 }
 
 .main-content {
@@ -162,6 +239,8 @@ li {
 
   .layout {
     flex-direction: column;
+  min-height: calc(100vh - 2 * var(--layout-padding-mobile));
+
   }
 
   .side-nav {
@@ -183,7 +262,7 @@ li {
   .bottom-nav {
     display: block;
     position: fixed;
-    bottom: 0;
+    bottom: var(--layout-padding-mobile);
     left: var(--layout-padding-mobile);
     right: var(--layout-padding-mobile);
     z-index: 10;
