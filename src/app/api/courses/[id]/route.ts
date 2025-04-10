@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise <{ id: string }>  }) {
   try {
+    const {id} = await params;
     const course = await prisma.course.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!course) {
@@ -21,14 +22,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT( request: Request, { params }: { params: { id: string } }) {
+export async function PUT( request: Request, { params }: { params: Promise <{ id: string }> }) {
     try {
       const body = await request.json();
   
       const { courseId, summary, lessonUnits, ects } = body;
-  
+      const {id} = await params;
+
       const updatedCourse = await prisma.course.update({
-        where: { id: params.id },
+        where: { id: id },
         data: {
           courseId,
           summary,
@@ -47,10 +49,11 @@ export async function PUT( request: Request, { params }: { params: { id: string 
     }
 }
 
-export async function DELETE( request: Request, { params }: { params: { id: string } }) {
+export async function DELETE( request: Request, { params }: { params: Promise <{ id: string }> }) {
     try {
+    const {id} = await params;
       await prisma.course.delete({
-        where: { id: params.id },
+        where: { id: id },
       });
   
       return NextResponse.json({ message: "Course deleted successfully" }, { status: 200 });
