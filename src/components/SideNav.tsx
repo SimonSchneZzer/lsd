@@ -2,17 +2,20 @@
 
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 
 export default function SideNav() {
   const { data: session, status } = useSession();
-
+  const pathname = usePathname();
   const isLoggedIn = status === 'authenticated';
+
+  const isActive = (href: string) => pathname === href;
 
   return (
     <nav>
       <h1>Lazy Student Dashboard</h1>
       <ul>
-        <li>
+        <li className={isActive('/dashboard/attendance') ? 'active' : ''}>
           <Link href="/dashboard/attendance">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,7 +28,7 @@ export default function SideNav() {
             </div>
           </Link>
         </li>
-        <li>
+        <li className={isActive('/dashboard/ects') ? 'active' : ''}>
           <Link href="/dashboard/ects">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <svg
@@ -46,12 +49,12 @@ export default function SideNav() {
             </div>
           </Link>
         </li>
-        <li>
+        <li className={isActive('/configurator') ? 'active' : ''}>
           <Link href="/configurator">
             <h2>🛠️ Configurator</h2>
           </Link>
         </li>
-        <li>
+        <li className={isActive('/profile') ? 'active' : ''}>
           <Link href="/profile">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               {isLoggedIn ? (
@@ -100,11 +103,16 @@ export default function SideNav() {
                   </g>
                 </svg>
               )}
-              <h2>Profile</h2>
+             <h2>Profile</h2>
             </div>
           </Link>
         </li>
       </ul>
+      <style jsx>{`
+        li.active h2 {
+          font-weight: bold;
+        }
+      `}</style>
     </nav>
   );
 }
