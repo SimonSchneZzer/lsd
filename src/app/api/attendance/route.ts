@@ -3,8 +3,8 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const courses = await prisma.course.findMany();
-    return NextResponse.json({ attendance: courses });
+    const attendanceData = await prisma.attendance.findMany();
+    return NextResponse.json({ attendance: attendanceData });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

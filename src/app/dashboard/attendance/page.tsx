@@ -19,9 +19,12 @@ export default function AttendancePage() {
     fetch('/api/attendance')
       .then((res) => res.json())
       .then((data) => {
-        console.log("Attendance data:", data); // Debug-Ausgabe
-        // Erwartet wird hier ein Objekt { attendance: Attendance[] }
-        const courses: GroupedEvent[] = data.attendance || [];
+        // Erwartet wird hier ein Objekt: { attendance: Attendance[] }
+        const courses: GroupedEvent[] = (data.attendance || []).map((course: any) => ({
+           ...course,
+           // Falls missedLessonUnits nicht definiert ist, setze sie auf 0
+           missedLessonUnits: course.missedLessonUnits ?? 0,
+        }));
         setGroupedEvents(courses);
         setLoading(false);
       })
