@@ -4,10 +4,10 @@ import prisma from "@/lib/prisma";
 
 // Damit Next.js den dynamischen Parameter asynchron verarbeitet:
 export const dynamic = 'force-dynamic';
-
 export async function PUT(
   request: Request,
-  { params }: { params: { courseId: string } }
+
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
     const resolvedParams = await Promise.resolve(params);
