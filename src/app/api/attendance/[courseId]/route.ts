@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export async function PUT(
   request: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise <{ courseId: string }> }
 ) {
   try {
     // Zuerst die Session abrufen, um den User zu kennen:
