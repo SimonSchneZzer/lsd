@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export async function PUT(
   request: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise <{ courseId: string }> }
 ) {
   try {
     // Zuerst die Session abrufen, um den User zu kennen:
@@ -18,8 +18,7 @@ export async function PUT(
     }
     const userId = session.user.id;
 
-    const resolvedParams = await Promise.resolve(params);
-    const { courseId } = resolvedParams;
+    const { courseId } = await params;
     const body = await request.json();
     const missedLessonUnits = body.missedLessonUnits ?? 0;
 

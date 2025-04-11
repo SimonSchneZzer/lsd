@@ -40,13 +40,13 @@ export const authOptions = {
     strategy: "jwt" as const,  // oder: strategy: "jwt" as "jwt"
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user?: { id: string } }) {
       if (user) {
         token.sub = user.id;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       // Stelle sicher, dass session.user.id gesetzt wird.
       session.user.id = token.sub as string;
       return session;
