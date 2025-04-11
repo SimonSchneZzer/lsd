@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Spinner from "@/components/Spinner/Spinner";
 import CourseCard, { EditableCourse } from "@/components/CourseCard/CourseCard";
+import styles from './ConfiguratorLayout.module.css';
 
 export default function ConfiguratorPage() {
   const [icsUrl, setIcsUrl] = useState("");
@@ -163,8 +164,9 @@ export default function ConfiguratorPage() {
   );
 
   return (
-    <>
-      {/* URL Input und ICS Fetch Button */}
+    <div className={styles.wrapper}>
+    {/* URL Input und ICS Fetch Button */}
+    <div className={styles['form-row']}>
       <label htmlFor="icsUrl">ICS URL:</label>
       <input
         type="text"
@@ -174,29 +176,67 @@ export default function ConfiguratorPage() {
         placeholder="Enter your ICS URL here..."
       />
       <button onClick={handleFetchICS}>Fetch Courses (from ICS)</button>
+    </div>
 
-      {loading && <Spinner />}
-      {error && <p className="error">{error}</p>}
+    {loading && <Spinner />}
+    {error && <p className="error">{error}</p>}
 
-      {uniqueCourses.length > 0 && (
-        <>
-          <div className="courses-container">
-            {uniqueCourses.map((course, index) => (
-              <CourseCard
-                key={course.id || index}
-                course={course}
-                index={index}
-                onChange={handleChange}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-          <div className="actions-row">
-            <button onClick={handleAdd}>Add Course</button>
-            <button onClick={handleSaveAll}>Save Changes</button>
-          </div>
-        </>
-      )}
-    </>
+    {uniqueCourses.length > 0 && (
+      <>
+        <div className={styles['courses-container']}>
+          {uniqueCourses.map((course, index) => (
+            <div key={course.id || index} className={styles['course-card']}>
+              <div className={`${styles['form-group']} ${styles['summary']}`}>
+                <label>Summary:</label>
+                <input
+                  type="text"
+                  value={course.summary}
+                  onChange={(e) => handleChange(index, 'summary', e.target.value)}
+                />
+              </div>
+
+              <div className={`${styles['form-group']} ${styles['course-id']}`}>
+                <label>Course ID:</label>
+                <input
+                  type="text"
+                  value={course.courseId}
+                  onChange={(e) => handleChange(index, 'courseId', e.target.value)}
+                />
+              </div>
+
+              <div className={`${styles['form-group']} ${styles['ects']}`}>
+                <label>ECTS:</label>
+                <input
+                  type="text"
+                  value={course.ects}
+                  onChange={(e) => handleChange(index, 'ects', e.target.value)}
+                />
+              </div>
+
+              <div className={`${styles['form-group']} ${styles['lesson-units']}`}>
+                <label>Lesson Units:</label>
+                <input
+                  type="text"
+                  value={course.lessonUnits}
+                  onChange={(e) => handleChange(index, 'lessonUnits', e.target.value)}
+                />
+              </div>
+
+              <button
+                className={styles['delete-button']}
+                onClick={() => handleDelete(index)}
+              >
+                Delete Course
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className={styles['actions-row']}>
+          <button onClick={handleAdd}>Add Course</button>
+          <button onClick={handleSaveAll}>Save Changes</button>
+        </div>
+      </>
+    )}
+  </div>
   );
 }
