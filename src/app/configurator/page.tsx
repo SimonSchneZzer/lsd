@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import Spinner from "@/components/Spinner/Spinner";
@@ -16,8 +16,9 @@ export default function ConfiguratorPage() {
     setError("");
     try {
       const persistentRes = await fetch("/api/courses");
-      if (!persistentRes.ok)
+      if (!persistentRes.ok) {
         throw new Error("Error fetching persistent courses");
+      }
       const persistentData = await persistentRes.json();
       setCourses(persistentData.courses || []);
     } catch (err) {
@@ -36,10 +37,12 @@ export default function ConfiguratorPage() {
       const response = await fetch(
         `/api/calendar?icsUrl=${encodeURIComponent(icsUrl)}`
       );
-      if (!response.ok) throw new Error("Error fetching courses from ICS feed");
+      if (!response.ok) {
+        throw new Error("Error fetching courses from ICS feed");
+      }
       const icsData = await response.json();
       const fetchedCourses = icsData.events;
-      // Speichere jeden Kurs in der DB per POST an /api/courses
+      // Speichere jeden Kurs in der DB per POST an /api/courses (Attendance wird hier nicht synchronisiert)
       for (const course of fetchedCourses) {
         const postRes = await fetch("/api/courses", {
           method: "POST",
@@ -59,7 +62,7 @@ export default function ConfiguratorPage() {
     }
   };
 
-  // Beim Mounten der Seite werden persistent gespeicherte Kurse geladen
+  // Beim Mounten der Seite werden persistente Kurse geladen
   useEffect(() => {
     loadPersistentCourses();
   }, []);
@@ -115,6 +118,7 @@ export default function ConfiguratorPage() {
     try {
       for (const course of courses) {
         if (course.id) {
+          // Aktualisiere existierende Kurse
           const res = await fetch(`/api/courses/${course.id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -137,23 +141,28 @@ export default function ConfiguratorPage() {
             throw new Error("Error creating course");
           }
           const data = await res.json();
-
           setCourses((prev) =>
             prev.map((c) => (c === course ? data.course : c))
           );
         }
       }
-      alert("Courses saved to database");
+      // Synchronisiere Attendance-Daten für den aktuellen Nutzer
+      const attendanceRes = await fetch("/api/attendance/importAll", {
+        method: "POST",
+      });
+      if (!attendanceRes.ok) {
+        throw new Error("Error syncing attendance data");
+      }
+      alert("Courses and attendance saved successfully");
     } catch (err) {
       console.error(err);
-      setError("Error saving courses");
+      setError("Error saving courses or syncing attendance");
     }
   };
 
   // Reduziere das Array, sodass nur der erste Kurs für jede Course ID gespeichert wird.
   const uniqueCourses = Object.values(
     courses.reduce((acc, course) => {
-      // Verwende courseId als Schlüssel – falls courseId nicht vorhanden ist, nutze summary.
       const key = course.courseId || course.summary;
       if (!acc[key]) {
         acc[key] = course;
@@ -164,7 +173,6 @@ export default function ConfiguratorPage() {
 
   return (
     <>
-      {/* URL Input und ICS Fetch Button */}
       <label htmlFor="icsUrl">ICS URL:</label>
       <input
         type="text"

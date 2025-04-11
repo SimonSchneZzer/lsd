@@ -58,26 +58,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const attendance = await prisma.attendance.upsert({
-        where: { 
-          userId_courseId: { userId, courseId } 
-        },
-        update: {
-            totalLessonUnits: { increment: lessonUnits },
-          summary,
-          userId, 
-        },
-        create: {
-          courseId,
-          summary,
-          totalLessonUnits: lessonUnits,
-          missedLessonUnits: 0,
-          progress: 0,
-          userId,
-        },
-      });
-
-    return NextResponse.json({ course, attendance }, { status: 201 });
+    return NextResponse.json({ course }, { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
