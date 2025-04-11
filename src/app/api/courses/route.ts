@@ -5,17 +5,21 @@ import { authOptions } from "@/lib/auth";
 
 // GET: Alle Kurse abrufen
 export async function GET() {
-  try {
-    const courses = await prisma.course.findMany();
-    return NextResponse.json({ courses });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Error fetching courses" },
-      { status: 500 }
-    );
+    try {
+      const session = await getServerSession(authOptions);
+      if (!session || !session.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      const userId = session.user.id;
+      const courses = await prisma.course.findMany({
+        where: { userId },
+      });
+      return NextResponse.json({ courses });
+    } catch (error) {
+      console.error(error);
+      return NextResponse.json({ error: "Error fetching courses" }, { status: 500 });
+    }
   }
-}
 
 export async function POST(request: Request) {
   try {
@@ -43,12 +47,14 @@ export async function POST(request: Request) {
         lessonUnits: { increment: lessonUnits },
         summary,
         ects,
+        userId, 
       },
       create: {
         courseId,
         summary,
         lessonUnits,
         ects,
+        userId
       },
     });
 
@@ -57,14 +63,14 @@ export async function POST(request: Request) {
           userId_courseId: { userId, courseId } 
         },
         update: {
-          totalLessonUnits: course.lessonUnits,
+            totalLessonUnits: { increment: lessonUnits },
           summary,
           userId, // Sollte derselbe sein wie oben
         },
         create: {
           courseId,
           summary,
-          totalLessonUnits: course.lessonUnits,
+          totalLessonUnits: lessonUnits,
           missedLessonUnits: 0,
           progress: 0,
           userId,
