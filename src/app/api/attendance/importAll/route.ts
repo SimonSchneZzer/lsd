@@ -11,11 +11,10 @@ export async function POST() {
     }
     const userId = session.user.id;
 
-    // Alle Kurse aus der Course-Tabelle laden
+
     const courses = await prisma.course.findMany();
 
-    // Für jeden Kurs upserten wir einen Attendance-Datensatz für diesen User
-    // Für jeden Kurs upserten wir einen Attendance-Datensatz für diesen User
+  
     const attendancePromises = courses.map((course) =>
         prisma.attendance.upsert({
         where: { 

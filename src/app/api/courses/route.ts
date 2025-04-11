@@ -65,7 +65,7 @@ export async function POST(request: Request) {
         update: {
             totalLessonUnits: { increment: lessonUnits },
           summary,
-          userId, // Sollte derselbe sein wie oben
+          userId, 
         },
         create: {
           courseId,

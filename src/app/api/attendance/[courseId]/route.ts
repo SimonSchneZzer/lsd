@@ -18,7 +18,8 @@ export async function PUT(
     }
     const userId = session.user.id;
 
-    const { courseId } = params;
+    const resolvedParams = await Promise.resolve(params);
+    const { courseId } = resolvedParams;
     const body = await request.json();
     const missedLessonUnits = body.missedLessonUnits ?? 0;
 
