@@ -42,12 +42,11 @@ export async function POST(request: Request) {
 
     // Upsert in der Course-Tabelle, dabei wird auch userId gesetzt
     const course = await prisma.course.upsert({
-      where: { courseId },
+      where: { courseId_userId: { courseId, userId } },
       update: {
         lessonUnits: { increment: lessonUnits },
         summary,
         ects,
-        userId, 
       },
       create: {
         courseId,
