@@ -153,6 +153,7 @@ export default function ConfiguratorPage() {
     {loading && <Spinner />}
     {error && <p className="error">{error}</p>}
 
+    
     {uniqueCourses.length > 0 && (
       <>
         <div className={styles['courses-container']}>

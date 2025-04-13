@@ -21,10 +21,13 @@ export async function POST(request: Request) {
     // Für jeden Kurs upserten wir sowohl einen Datensatz in der Course‑ als auch in der Attendance‑Tabelle
     const results = await Promise.all(
       courses.map(async (courseData) => {
+        if (!courseData.courseId) {
+          console.warn(`Skipping course "${courseData.summary}" because courseId is missing.`);
+          return null;
+        }
         const course = await prisma.course.upsert({
-          where: { courseId: courseData.courseId },
+          where: { courseId_userId: { courseId: courseData.courseId, userId: userId } },
           update: {
-            // Erhöhe lessonUnits (oder passe andere Felder an)
             lessonUnits: { increment: courseData.lessonUnits ?? 0 },
             summary: courseData.summary ?? "",
             ects: courseData.ects ?? 0,
