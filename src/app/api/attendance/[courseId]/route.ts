@@ -1,43 +1,63 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 
-// Damit Next.js den dynamischen Parameter asynchron verarbeitet:
-export const dynamic = 'force-dynamic';
-
-export async function PUT(
+export async function POST(
   request: Request,
-  { params }: { params: Promise <{ courseId: string }> }
+  { params }: { params: { courseId: string } }
 ) {
   try {
-    // Zuerst die Session abrufen, um den User zu kennen:
+    // Session abfragen
     const session = await getServerSession(authOptions);
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = session.user.id;
+    const { courseId } = params;
 
-    const { courseId } = await params;
-    const body = await request.json();
-    const missedLessonUnits = body.missedLessonUnits ?? 0;
+    // Der Request-Body enthält die Daten für den einzelnen Kurs
+    const courseData = await request.json();
 
-    // Verwende den zusammengesetzten Unique-Key im Where-Block:
-    const attendance = await prisma.attendance.upsert({
-      where: { userId_courseId: { userId, courseId } },
-      update: { missedLessonUnits },
+    // Zuerst upserten wir den Kurs in der Course‑Tabelle
+    const course = await prisma.course.upsert({
+      where: { courseId },
+      update: {
+        lessonUnits: { increment: courseData.lessonUnits ?? 0 },
+        summary: courseData.summary ?? "",
+        ects: courseData.ects ?? 0,
+      },
       create: {
         courseId,
-        summary: body.summary || "",
-        totalLessonUnits: 0, // Hier ggf. einen Wert einsetzen, wenn verfügbar
-        missedLessonUnits: missedLessonUnits,
-        progress: 0,
+        summary: courseData.summary ?? "",
+        lessonUnits: courseData.lessonUnits ?? 0,
+        ects: courseData.ects ?? 0,
         userId,
       },
     });
-    return NextResponse.json({ attendance });
+
+    // Anschließend upserten wir den Datensatz in der Attendance‑Tabelle
+    const attendance = await prisma.attendance.upsert({
+      where: { userId_courseId: { userId, courseId } },
+      update: {
+        totalLessonUnits: courseData.lessonUnits ?? 0,
+        summary: courseData.summary ?? "",
+        missedLessonUnits: courseData.missedLessonUnits ?? 0,
+        progress: courseData.progress ?? 0,
+      },
+      create: {
+        courseId,
+        summary: courseData.summary ?? "",
+        totalLessonUnits: courseData.lessonUnits ?? 0,
+        missedLessonUnits: courseData.missedLessonUnits ?? 0,
+        progress: courseData.progress ?? 0,
+        userId,
+      },
+    });
+
+    return NextResponse.json({ course, attendance });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Error updating attendance" }, { status: 500 });
+    console.error("Error in attendance for course", params.courseId, error);
+    return NextResponse.json({ error: "Error updating attendance record" }, { status: 500 });
   }
 }

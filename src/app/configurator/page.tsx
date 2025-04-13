@@ -43,18 +43,9 @@ export default function ConfiguratorPage() {
       }
       const icsData = await response.json();
       const fetchedCourses = icsData.events;
-      // Speichere jeden Kurs in der DB per POST an /api/courses (Attendance wird hier nicht synchronisiert)
-      for (const course of fetchedCourses) {
-        const postRes = await fetch("/api/courses", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(course),
-        });
-        if (!postRes.ok) {
-          console.error("Error saving course:", course);
-        }
-      }
-      await loadPersistentCourses();
+     
+      setCourses(fetchedCourses);
+
     } catch (err) {
       console.error(err);
       setError("Error fetching courses from ICS feed. Please try again.");
@@ -117,39 +108,11 @@ export default function ConfiguratorPage() {
 
   const handleSaveAll = async () => {
     try {
-      for (const course of courses) {
-        if (course.id) {
-          // Aktualisiere existierende Kurse
-          const res = await fetch(`/api/courses/${course.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(course),
-          });
-          if (!res.ok) {
-            throw new Error(`Error updating course with id ${course.id}`);
-          }
-        } else {
-          if (!course.courseId || course.courseId.trim() === "") {
-            setError("Course ID must not be empty for new courses.");
-            return;
-          }
-          const res = await fetch("/api/courses", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(course),
-          });
-          if (!res.ok) {
-            throw new Error("Error creating course");
-          }
-          const data = await res.json();
-          setCourses((prev) =>
-            prev.map((c) => (c === course ? data.course : c))
-          );
-        }
-      }
-      // Synchronisiere Attendance-Daten für den aktuellen Nutzer
+      // Sende alle Kurse gesammelt an den Batch-Import-Endpunkt
       const attendanceRes = await fetch("/api/attendance/importAll", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courses }),
       });
       if (!attendanceRes.ok) {
         throw new Error("Error syncing attendance data");
