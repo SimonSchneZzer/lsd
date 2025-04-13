@@ -33,9 +33,9 @@ export default function SideNav() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="40"
-                viewBox="0 0 30 30"
+                width="30"
+                height="30"
+                viewBox="0 0 24 24"
                 fill="none"
                 stroke="#ffffff"
                 strokeWidth="2"
@@ -51,7 +51,17 @@ export default function SideNav() {
         </li>
         <li className={isActive('/configurator') ? 'active' : ''}>
           <Link href="/configurator">
-            <h2>🛠️ Configurator</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.5094 8.25078C19.0094 8.25078 19.4094 7.85078 19.4094 7.35078V2.70078C19.4094 2.20078 19.0094 1.80078 18.5094 1.80078C18.0094 1.80078 17.6094 2.20078 17.6094 2.70078V7.35078C17.6094 7.84078 18.0194 8.25078 18.5094 8.25078Z" fill="#ffffff" />
+                <path d="M11.9996 15.75C11.4996 15.75 11.0996 16.15 11.0996 16.65V21.3C11.0996 21.8 11.4996 22.2 11.9996 22.2C12.4996 22.2 12.8996 21.8 12.8996 21.3V16.65C12.8996 16.16 12.4996 15.75 11.9996 15.75Z" fill="#ffffff" />
+                <path d="M5.48984 8.25078C5.98984 8.25078 6.38984 7.85078 6.38984 7.35078V2.70078C6.38984 2.20078 5.98984 1.80078 5.48984 1.80078C4.98984 1.80078 4.58984 2.20078 4.58984 2.70078V7.35078C4.58984 7.84078 4.98984 8.25078 5.48984 8.25078Z" fill="#ffffff" />
+                <path d="M7.35047 10.1719H3.63047C3.13047 10.1719 2.73047 10.5719 2.73047 11.0719C2.73047 11.5719 3.13047 11.9719 3.63047 11.9719H4.59047V21.3019C4.59047 21.8019 4.99047 22.2019 5.49047 22.2019C5.99047 22.2019 6.39047 21.8019 6.39047 21.3019V11.9719H7.35047C7.85047 11.9719 8.25047 11.5719 8.25047 11.0719C8.25047 10.5719 7.84047 10.1719 7.35047 10.1719Z" fill="#ffffff" />
+                <path d="M20.37 10.1719H16.65C16.15 10.1719 15.75 10.5719 15.75 11.0719C15.75 11.5719 16.15 11.9719 16.65 11.9719H17.61V21.3019C17.61 21.8019 18.01 22.2019 18.51 22.2019C19.01 22.2019 19.41 21.8019 19.41 21.3019V11.9719H20.37C20.87 11.9719 21.27 11.5719 21.27 11.0719C21.27 10.5719 20.87 10.1719 20.37 10.1719Z" fill="#ffffff" />
+                <path d="M13.8602 12.0308H12.9002V2.70078C12.9002 2.20078 12.5002 1.80078 12.0002 1.80078C11.5002 1.80078 11.1002 2.20078 11.1002 2.70078V12.0308H10.1402C9.64023 12.0308 9.24023 12.4308 9.24023 12.9308C9.24023 13.4308 9.64023 13.8308 10.1402 13.8308H13.8602C14.3602 13.8308 14.7602 13.4308 14.7602 12.9308C14.7602 12.4308 14.3602 12.0308 13.8602 12.0308Z" fill="#ffffff" />
+              </svg>
+              <h2>Course Settings</h2>
+            </div>
           </Link>
         </li>
         <li className={isActive('/profile') ? 'active' : ''}>
@@ -59,7 +69,7 @@ export default function SideNav() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               {isLoggedIn ? (
                 // Logged-in user icon
-                <svg width="25" height="25" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+                <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                     <g id="Dribbble-Light-Preview" transform="translate(-420, -2119)" fill="#ffffff">
                       <g id="icons" transform="translate(56, 160)">
@@ -91,7 +101,7 @@ export default function SideNav() {
                 </svg>
               ) : (
                 // Not logged-in user icon (simple user outline)
-                <svg width="25" height="25" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                <svg width="30" height="30" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg">
                   <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                     <g id="Dribbble-Light-Preview" transform="translate(-380.000000, -2119.000000)" fill="#ffffff">
                       <g id="icons" transform="translate(56.000000, 160.000000)">
@@ -103,7 +113,20 @@ export default function SideNav() {
                   </g>
                 </svg>
               )}
-             <h2>Profile</h2>
+              <h2>Profile</h2>
+            </div>
+          </Link>
+        </li>
+        <li className={isActive('/dashboard/tutorial') ? 'active' : ''}>
+          <Link href="/dashboard/tutorial">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path opacity="0.1" d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" fill="#none" />
+                <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#ffffff" stroke-width="2" />
+                <path d="M10.5 8.67709C10.8665 8.26188 11.4027 8 12 8C13.1046 8 14 8.89543 14 10C14 10.9337 13.3601 11.718 12.4949 11.9383C12.2273 12.0064 12 12.2239 12 12.5V12.5V13" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M12 16H12.01" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <h2> Tutorial</h2>
             </div>
           </Link>
         </li>

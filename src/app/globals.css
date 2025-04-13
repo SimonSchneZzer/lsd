@@ -200,7 +200,7 @@ button:hover {
 
 .side-nav li {
   position: relative;
-  display: inline-block;
+  display: block;
   padding-bottom: 0.3rem;
   cursor: pointer;
 }
