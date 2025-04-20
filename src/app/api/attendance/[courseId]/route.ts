@@ -57,7 +57,8 @@ export async function POST(
 
     return NextResponse.json({ course, attendance });
   } catch (error) {
-    console.error("Error in attendance for course", params.courseId, error);
+    const resolvedParams = await params;
+    console.error("Error in attendance for course", resolvedParams.courseId, error);
     return NextResponse.json({ error: "Error updating attendance record" }, { status: 500 });
   }
 }
