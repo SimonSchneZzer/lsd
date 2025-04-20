@@ -5,7 +5,7 @@ import { authOptions } from '@/lib/auth';
 
 export async function POST(
   request: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise <{ courseId: string }> }
 ) {
   try {
     // Session abfragen
@@ -14,14 +14,14 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = session.user.id;
-    const { courseId } = params;
+    const { courseId } = await params;
 
     // Der Request-Body enthält die Daten für den einzelnen Kurs
     const courseData = await request.json();
 
     // Zuerst upserten wir den Kurs in der Course‑Tabelle
     const course = await prisma.course.upsert({
-      where: { courseId },
+      where: { courseId_userId: { courseId, userId } },
       update: {
         lessonUnits: { increment: courseData.lessonUnits ?? 0 },
         summary: courseData.summary ?? "",
