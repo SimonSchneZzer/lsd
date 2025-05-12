@@ -48,7 +48,7 @@ export default function ECTSPage() {
       {loading ? (
         <Spinner />
       ) : groupedEvents.length === 0 ? (
-        <p>No events found.</p>
+        <p>No events found. This feature is currently only available for MMT-Bachelor Studentss</p>
       ) : (
         <ul>
           {groupedEvents.map((event) => (
