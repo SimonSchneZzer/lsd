@@ -14,14 +14,14 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = session.user.id;
-    const { courseId } = params;
+    const { courseId } = await params;
 
     // Der Request-Body enthält die Daten für den einzelnen Kurs
     const courseData = await request.json();
 
     // Zuerst upserten wir den Kurs in der Course‑Tabelle
     const course = await prisma.course.upsert({
-      where: { courseId },
+      where: { courseId_userId: { courseId, userId } },
       update: {
         lessonUnits: { increment: courseData.lessonUnits ?? 0 },
         summary: courseData.summary ?? "",
@@ -57,7 +57,8 @@ export async function POST(
 
     return NextResponse.json({ course, attendance });
   } catch (error) {
-    console.error("Error in attendance for course", params.courseId, error);
+    const resolvedParams = await params;
+    console.error("Error in attendance for course", resolvedParams.courseId, error);
     return NextResponse.json({ error: "Error updating attendance record" }, { status: 500 });
   }
 }
