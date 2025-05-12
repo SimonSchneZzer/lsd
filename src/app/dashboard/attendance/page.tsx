@@ -1,82 +1,98 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import Spinner from '@/components/Spinner';
 import ProgressBar from '@/components/ProgressBar/ProgressBar';
 
 type AttendanceData = {
+  id: string;
   courseId: string;
   summary: string;
   totalLessonUnits: number;
   missedLessonUnits: number;
+  progress: number;
 };
 
 export default function AttendancePage() {
-  const { data: session, status } = useSession();
   const [attendanceData, setAttendanceData] = useState<AttendanceData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      fetch('/api/attendance')
-        .then((res) => res.json())
-        .then((data) => {
-          const attendance: AttendanceData[] = data.attendance || [];
-          setAttendanceData(attendance);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error('Error fetching attendance data:', err);
-          setLoading(false);
-        });
-    }
-  }, [status]);
-
-  if (status === 'loading' || loading) return <Spinner />;
-  if (!session) return <p>Please sign in to view your attendance.</p>;
-
-  const updateMissedLessonUnits = async (courseId: string, newValue: number) => {
-    try {
-      const res = await fetch(`/api/attendance/${courseId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ missedLessonUnits: newValue }),
-      });
-      if (!res.ok) {
-        throw new Error(`Failed to update missedLessonUnits for course ${courseId}`);
+    const fetchData = async () => {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+  
+      if (sessionError || !session?.user?.id) {
+        console.error("Fehler beim Abrufen der Session:", sessionError);
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error('Error updating missedLessonUnits:', error);
+  
+      const { data, error } = await supabase
+        .from('Attendance')
+        .select('*')
+        .eq('userId', session.user.id); 
+  
+      if (error) {
+        console.error('Fehler beim Laden der Daten:', error);
+      } else {
+        setAttendanceData(data as AttendanceData[]);
+      }
+  
+      setLoading(false);
+    };
+  
+    fetchData();
+  }, []);
+
+  const updateMissedLessonUnits = async (id: string, missed: number, total: number) => {
+    const progress = total > 0 ? missed / total : 0;
+
+    const { error } = await supabase
+      .from('Attendance')
+      .update({ missedLessonUnits: missed, progress })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Fehler beim Aktualisieren:', error);
     }
   };
 
   const handleChange = (id: string, delta: number) => {
     setAttendanceData((prev) =>
       prev.map((item) => {
-        if (item.courseId === id) {
+        if (item.id === id) {
           const newMissed = Math.max(0, item.missedLessonUnits + delta);
-          updateMissedLessonUnits(id, newMissed);
-          return { ...item, missedLessonUnits: newMissed };
+          updateMissedLessonUnits(id, newMissed, item.totalLessonUnits);
+          return {
+            ...item,
+            missedLessonUnits: newMissed,
+            progress: item.totalLessonUnits > 0 ? newMissed / item.totalLessonUnits : 0,
+          };
         }
         return item;
       })
     );
   };
 
+  if (loading) return <Spinner />;
+
   return (
     <div>
       {attendanceData.length === 0 ? (
-        <p>No attendance data found.</p>
+        <p>Keine Anwesenheitsdaten gefunden.</p>
       ) : (
         attendanceData.map((item) => (
           <ProgressBar
-            key={item.courseId}
+            key={item.id}
             summary={item.summary}
             missed={item.missedLessonUnits}
             totalLessonUnits={item.totalLessonUnits}
-            onIncrement={() => handleChange(item.courseId, 1)}
-            onDecrement={() => handleChange(item.courseId, -1)}
+            onIncrement={() => handleChange(item.id, 1)}
+            onDecrement={() => handleChange(item.id, -1)}
           />
         ))
       )}
