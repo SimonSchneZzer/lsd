@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import styles from './profile.module.css';
+import Spinner from '@/components/Spinner/Spinner';
 
 export default function ProfilePage() {
   const [email, setEmail] = useState<string | null>(null);
@@ -31,17 +32,17 @@ export default function ProfilePage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push('/login');
+    router.push('/Welcome');
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Spinner />;
 
   if (!email) {
     return (
       <div className={styles.notloggedin}>
         <h2>You are not logged in</h2>
         <p>
-          <u><a href="/login">Sign in</a></u> or <u><a href="/register">register</a></u> to access your profile.
+          <u><a href="/Welcome">Sign in</a></u> or <u><a href="/Welcome">register</a></u> to access your profile.
         </p>
       </div>
     );

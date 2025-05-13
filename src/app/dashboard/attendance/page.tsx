@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import Spinner from '@/components/Spinner';
 import ProgressBar from '@/components/ProgressBar/ProgressBar';
+import Spinner from '@/components/Spinner/Spinner';
 
 type AttendanceData = {
   id: string;
