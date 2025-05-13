@@ -23,11 +23,13 @@ describe('<AttendancePage />', () => {
   });
 
   it('shows spinner while loading', async () => {
+    // Simuliert, dass der Benutzer eingeloggt ist und eine gültige Sitzung hat.
     (supabase.auth.getSession as any).mockResolvedValue({
       data: { session: { user: { id: '123' } } },
       error: null,
     });
 
+    // Simuliert, dass keine Anwesenheitsdaten aus der Datenbank zurückgegeben werden.
     (supabase.from as any).mockReturnValue({
       select: () => ({
         eq: () => Promise.resolve({ data: [], error: null }),
@@ -35,18 +37,24 @@ describe('<AttendancePage />', () => {
     });
 
     render(<AttendancePage />);
-    expect(screen.getByRole('status')).toBeInTheDocument(); // Spinner is loading
+
+    // Überprüft, ob ein Spinner (Ladesymbol) angezeigt wird, während die Daten geladen werden.
+    expect(screen.getByRole('status')).toBeInTheDocument();
+
+    // Wartet darauf, dass die Nachricht "keine anwesenheitsdaten" angezeigt wird, wenn keine Daten vorhanden sind.
     await waitFor(() => {
       expect(screen.getByText(/keine anwesenheitsdaten/i)).toBeInTheDocument();
     });
   });
 
   it('renders attendance data', async () => {
+    // Simuliert, dass der Benutzer eingeloggt ist und eine gültige Sitzung hat.
     (supabase.auth.getSession as any).mockResolvedValue({
       data: { session: { user: { id: '123' } } },
       error: null,
     });
 
+    // Simuliert, dass Anwesenheitsdaten aus der Datenbank zurückgegeben werden.
     (supabase.from as any).mockReturnValue({
       select: () => ({
         eq: () => Promise.resolve({
@@ -67,6 +75,7 @@ describe('<AttendancePage />', () => {
 
     render(<AttendancePage />);
 
+    // Wartet darauf, dass die Anwesenheitsdaten (z. B. der Kursname "Medientechnik") angezeigt werden.
     await waitFor(() => {
       expect(screen.getByText('Medientechnik')).toBeInTheDocument();
     });
