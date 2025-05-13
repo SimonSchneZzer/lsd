@@ -1,12 +1,13 @@
 'use client';
 
 import Link from "next/link";
-import { useSession } from 'next-auth/react';
+import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
 
 export default function BottomNav() {
-  const { data: session, status } = useSession();
+  const supabase = useSupabaseClient();
+  const session = useSession();
 
-  const isLoggedIn = status === 'authenticated';
+  const isLoggedIn = !!session;
 
   return (
     <nav>
