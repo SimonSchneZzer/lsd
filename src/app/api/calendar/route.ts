@@ -55,8 +55,11 @@ export async function GET(request: Request) {
 
         if (isGuestLecture || isFullDay) return null;
 
-        const { ects, courseId } = getEctsMatch(summary, flattenedMapping);
+        const { ects } = getEctsMatch(summary, flattenedMapping);
         if (ects === 0) unmatchedSummaries.push(summary);
+
+        // 2) CourseID jetzt immer aus dem Summary (alles vor ' - ')
+        const derivedCourseId = summary.split(" - ")[0].trim();
 
         const lessonUnits = estimateLessonUnits(durationMinutes);
 
@@ -68,7 +71,7 @@ export async function GET(request: Request) {
           durationMinutes,
           lessonUnits,
           ects,
-          courseId,
+          courseId: derivedCourseId,
         };
       })
       .filter(Boolean) as CalendarEvent[];
