@@ -61,10 +61,12 @@ export async function GET(request: Request) {
         // 2) CourseID jetzt immer aus dem Summary (alles vor ' - ')
         const derivedCourseId = summary.split(" - ")[0].trim();
 
+        const summaryMatch = summary.match(/(.*) - (.*)/);
+
         const lessonUnits = estimateLessonUnits(durationMinutes);
 
         return {
-          summary,
+          summary: summaryMatch ? summaryMatch[2] : summary,
           description,
           dtstart,
           dtend,

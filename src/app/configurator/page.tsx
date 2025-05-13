@@ -7,6 +7,7 @@ import { EditableCourse } from "@/components/CourseCard/CourseCard";
 import styles from "./ConfiguratorLayout.module.css";
 
 export default function ConfiguratorPage() {
+  const [userId, setUserId] = useState<string | null>(null);
   const [icsUrl, setIcsUrl] = useState<string>("");
   const [rawCourses, setRawCourses] = useState<EditableCourse[]>([]);
   const [deletedCourseIds, setDeletedCourseIds] = useState<string[]>([]);
@@ -21,27 +22,30 @@ export default function ConfiguratorPage() {
       if (!map.has(key)) {
         map.set(key, { ...course });
       } else {
-        const existing = map.get(key)!;
-        existing.lessonUnits += course.lessonUnits;
+        map.get(key)!.lessonUnits += course.lessonUnits;
       }
     });
     return Array.from(map.values());
   }, []);
 
-  // Fetch attendance from DB on mount
+  // Check session and fetch attendance on mount
   useEffect(() => {
     (async () => {
       setLoading(true);
       setError("");
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        const userId = session?.user?.id;
-        if (!userId) throw new Error("User not authenticated");
+        const id = session?.user?.id || null;
+        setUserId(id);
+        if (!id) {
+          setRawCourses([]);
+          return;
+        }
 
         const { data, error } = await supabase
           .from("Attendance")
           .select("courseId, summary, totalLessonUnits, ects")
-          .eq("userId", userId);
+          .eq("userId", id);
         if (error) throw error;
 
         const fetched = data.map(item => ({
@@ -61,6 +65,7 @@ export default function ConfiguratorPage() {
   }, [aggregateCourses]);
 
   const handleFetchICS = useCallback(async () => {
+    if (!userId) return;
     setLoading(true);
     setError("");
     try {
@@ -74,7 +79,7 @@ export default function ConfiguratorPage() {
     } finally {
       setLoading(false);
     }
-  }, [icsUrl, aggregateCourses]);
+  }, [icsUrl, aggregateCourses, userId]);
 
   // Local edits
   const handleChange = useCallback(
@@ -106,13 +111,10 @@ export default function ConfiguratorPage() {
 
   // Save all: deletes + inserts + updates separately
   const handleSaveAll = useCallback(async () => {
+    if (!userId) return;
     setLoading(true);
     setError("");
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
-      if (!userId) throw new Error("User not authenticated");
-
       // 1) Delete queued removals
       if (deletedCourseIds.length > 0) {
         const { error: delErr } = await supabase
@@ -178,7 +180,16 @@ export default function ConfiguratorPage() {
     } finally {
       setLoading(false);
     }
-  }, [rawCourses, deletedCourseIds, aggregateCourses]);
+  }, [rawCourses, deletedCourseIds, aggregateCourses, userId]);
+
+  // Early return if not authenticated
+  if (!loading && userId === null) {
+    return (
+      <div className={styles.wrapper}>
+        <p className="error">Please log in to view or edit courses.</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -202,7 +213,7 @@ export default function ConfiguratorPage() {
       )}
 
       {rawCourses.length > 0 && (
-        <>
+        <>  
           <div className={styles["courses-container"]}>
             {rawCourses.map((course, i) => (
               <div key={i} className={styles["course-card"]}>
