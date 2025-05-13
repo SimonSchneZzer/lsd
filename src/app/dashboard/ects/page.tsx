@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CalendarEvent } from '@/types/event';
-import Spinner from '@/components/Spinner';
+import Spinner from '@/components/Spinner/Spinner';
 
 type GroupedEvent = {
   courseId: string;
