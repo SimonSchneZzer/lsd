@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import ProgressBar from '@/components/ProgressBar/ProgressBar';
 import Spinner from '@/components/Spinner/Spinner';
 
+// Typdefinition für Abwesenheitsdaten
 type AttendanceData = {
   id: string;
   courseId: string;
@@ -20,35 +21,46 @@ export default function AttendancePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
-  
-      if (sessionError || !session?.user?.id) {
-        console.error("Fehler beim Abrufen der Session:", sessionError);
+      // Session abrufen
+      const { data, error: sessionError } = await supabase.auth.getSession();
+      const session = data.session;
+
+      if (sessionError) {
+        console.error('Supabase-Error beim Abrufen der Session:', sessionError);
         setLoading(false);
         return;
       }
-  
-      const { data, error } = await supabase
+
+      if (!session?.user) {
+        console.warn('Benutzer ist nicht eingeloggt.');
+        setLoading(false);
+        return;
+      }
+
+      // Daten aus der Tabelle Attendance laden
+      const { data: attendance, error: dbError } = await supabase
         .from('Attendance')
         .select('*')
-        .eq('userId', session.user.id); 
-  
-      if (error) {
-        console.error('Fehler beim Laden der Daten:', error);
+        .eq('userId', session.user.id);
+
+      if (dbError) {
+        console.error('Fehler beim Laden der Daten:', dbError);
       } else {
-        setAttendanceData(data as AttendanceData[]);
+        setAttendanceData(attendance as AttendanceData[]);
       }
-  
+
       setLoading(false);
     };
-  
+
     fetchData();
   }, []);
 
-  const updateMissedLessonUnits = async (id: string, missed: number, total: number) => {
+  // Funktion zum Aktualisieren der verpassten Unterrichtseinheiten
+  const updateMissedLessonUnits = async (
+    id: string,
+    missed: number,
+    total: number
+  ) => {
     const progress = total > 0 ? missed / total : 0;
 
     const { error } = await supabase
@@ -61,16 +73,17 @@ export default function AttendancePage() {
     }
   };
 
+  // Handler für Increment/Decrement
   const handleChange = (id: string, delta: number) => {
-    setAttendanceData((prev) =>
-      prev.map((item) => {
+    setAttendanceData(prev =>
+      prev.map(item => {
         if (item.id === id) {
           const newMissed = Math.max(0, item.missedLessonUnits + delta);
           updateMissedLessonUnits(id, newMissed, item.totalLessonUnits);
           return {
             ...item,
             missedLessonUnits: newMissed,
-            progress: item.totalLessonUnits > 0 ? newMissed / item.totalLessonUnits : 0,
+            progress: item.totalLessonUnits > 0 ? newMissed / item.totalLessonUnits : 0
           };
         }
         return item;
@@ -85,7 +98,7 @@ export default function AttendancePage() {
       {attendanceData.length === 0 ? (
         <p>Keine Anwesenheitsdaten gefunden.</p>
       ) : (
-        attendanceData.map((item) => (
+        attendanceData.map(item => (
           <ProgressBar
             key={item.id}
             summary={item.summary}

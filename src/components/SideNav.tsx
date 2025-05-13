@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@supabase/auth-helpers-react';
 import { usePathname } from 'next/navigation';
 
 export default function SideNav() {
-  const { data: session, status } = useSession();
+  const session = useSession();
   const pathname = usePathname();
-  const isLoggedIn = status === 'authenticated';
+  const isLoggedIn = !!session;
 
   const isActive = (href: string) => pathname === href;
 
