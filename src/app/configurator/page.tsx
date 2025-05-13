@@ -1,201 +1,242 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import Spinner from "@/components/Spinner/Spinner";
-import CourseCard, { EditableCourse } from "@/components/CourseCard/CourseCard";
-import styles from './ConfiguratorLayout.module.css';
+import { EditableCourse } from "@/components/CourseCard/CourseCard";
+import styles from "./ConfiguratorLayout.module.css";
 
 export default function ConfiguratorPage() {
-  const [icsUrl, setIcsUrl] = useState("");
-  const [courses, setCourses] = useState<EditableCourse[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [icsUrl, setIcsUrl] = useState<string>("");
+  const [rawCourses, setRawCourses] = useState<EditableCourse[]>([]);
+  const [deletedCourseIds, setDeletedCourseIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
-  // Load persistent courses from the DB
-  const loadPersistentCourses = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/courses");
-      if (!res.ok) {
-        throw new Error("Error fetching persistent courses");
+  // Fetch attendance from DB on mount
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session?.user?.id;
+        if (!userId) throw new Error("User not authenticated");
+
+        const { data, error } = await supabase
+          .from("Attendance")
+          .select("courseId, summary, totalLessonUnits, ects")
+          .eq("userId", userId);
+        if (error) throw error;
+
+        setRawCourses(
+          data.map(item => ({
+            courseId: item.courseId,
+            summary: item.summary,
+            lessonUnits: item.totalLessonUnits,
+            ects: item.ects || 0,
+          }))
+        );
+      } catch (err: any) {
+        console.error("Fetch error:", err);
+        setError("Fehler beim Laden der Daten: " + err.message);
+      } finally {
+        setLoading(false);
       }
-      const data = await res.json();
-      setCourses(data.courses || []);
-    } catch (err) {
-      console.error(err);
-      setError("Error loading persistent courses.");
-    } finally {
-      setLoading(false);
-    }
+    })();
   }, []);
 
-  // Fetch courses from ICS if no persistent data
   const handleFetchICS = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch(
-        `/api/calendar?icsUrl=${encodeURIComponent(icsUrl)}`
-      );
-      if (!response.ok) {
-        throw new Error("Error fetching courses from ICS feed");
-      }
-      const icsData = await response.json();
-      setCourses(icsData.events);
-    } catch (err) {
+      const res = await fetch(`/api/calendar?icsUrl=${encodeURIComponent(icsUrl)}`);
+      if (!res.ok) throw new Error("ICS fetch failed");
+      const icsData = await res.json();
+      setRawCourses(icsData.events);
+    } catch (err: any) {
       console.error(err);
-      setError("Error fetching courses from ICS feed. Please try again.");
+      setError("Error fetching courses from ICS. " + err.message);
     } finally {
       setLoading(false);
     }
   }, [icsUrl]);
 
-  // On mount, load persistent courses
-  useEffect(() => {
-    loadPersistentCourses();
-  }, [loadPersistentCourses]);
-
+  // Local edits
   const handleChange = useCallback(
     (index: number, field: keyof EditableCourse, value: string) => {
-      setCourses((prev) => {
-        const newCourses = [...prev];
-        if (field === "lessonUnits" || field === "ects") {
-          const parsed = Number(value);
-          if (isNaN(parsed)) return prev;
-          newCourses[index] = { ...newCourses[index], [field]: parsed };
-        } else {
-          newCourses[index] = { ...newCourses[index], [field]: value };
-        }
-        return newCourses;
+      setRawCourses(prev => {
+        const updated = [...prev];
+        updated[index] = {
+          ...updated[index],
+          [field]: field === "lessonUnits" || field === "ects" ? Number(value) : value,
+        } as any;
+        return updated;
       });
     },
     []
   );
 
-  const handleAdd = useCallback(() => {
-    const newCourse: EditableCourse = {
-      courseId: "",
-      summary: "",
-      lessonUnits: 0,
-      ects: 0,
-    };
-    setCourses((prev) => [...prev, newCourse]);
-  }, []);
+  const handleAdd = () => {
+    setRawCourses(prev => [
+      ...prev,
+      { courseId: "", summary: "", lessonUnits: 0, ects: 0 },
+    ]);
+  };
 
-  const handleDelete = useCallback(
-    async (index: number) => {
-      const courseToDelete = courses[index];
-      try {
-        if (courseToDelete && (courseToDelete as any).id) {
-          const res = await fetch(`/api/courses/${(courseToDelete as any).id}`, {
-            method: "DELETE",
-          });
-          if (!res.ok) {
-            throw new Error("Error deleting course");
-          }
-        }
-        setCourses((prev) => prev.filter((_, i) => i !== index));
-      } catch (err) {
-        console.error(err);
-        setError("Error deleting course");
-      }
+  const handleDelete = (index: number) => {
+    const { courseId } = rawCourses[index];
+    if (courseId) setDeletedCourseIds(prev => [...prev, courseId]);
+    setRawCourses(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const aggregatedCourses = useMemo<EditableCourse[]>(
+    () => {
+      const map = new Map<string, EditableCourse>();
+      rawCourses.forEach(course => {
+        const key = course.courseId || course.summary;
+        if (!map.has(key)) map.set(key, { ...course });
+        else map.get(key)!.lessonUnits += course.lessonUnits;
+      });
+      return Array.from(map.values());
     },
-    [courses]
+    [rawCourses]
   );
 
+  // Save all: deletes + inserts + updates separately
   const handleSaveAll = useCallback(async () => {
+    setLoading(true);
+    setError("");
     try {
-      const res = await fetch("/api/attendance/importAll", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courses }),
-      });
-      if (!res.ok) {
-        throw new Error("Error syncing attendance data");
-      }
-      // TODO: replace alert with toast for better UX
-      alert("Courses and attendance saved successfully");
-    } catch (err) {
-      console.error(err);
-      setError("Error saving courses or syncing attendance");
-    }
-  }, [courses]);
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      if (!userId) throw new Error("User not authenticated");
 
-  // Only keep first course per courseId or summary
-  const uniqueCourses = useMemo(() => {
-    return Object.values(
-      courses.reduce<Record<string, EditableCourse>>((acc, course) => {
-        const key = course.courseId || course.summary;
-        if (!acc[key]) acc[key] = course;
-        return acc;
-      }, {})
-    );
-  }, [courses]);
+      // 1) Delete queued removals
+      if (deletedCourseIds.length > 0) {
+        const { error: delErr } = await supabase
+          .from("Attendance")
+          .delete()
+          .in("courseId", deletedCourseIds)
+          .eq("userId", userId);
+        if (delErr) throw delErr;
+        setDeletedCourseIds([]);
+      }
+
+      // 2) Fetch existing IDs
+      const { data: existingEntries, error: fetchErr } = await supabase
+        .from("Attendance")
+        .select("courseId")
+        .eq("userId", userId);
+      if (fetchErr) throw fetchErr;
+      const existingIds = new Set(existingEntries.map(e => e.courseId));
+
+      // 3) Prepare inserts and updates
+      const toInsert = aggregatedCourses.filter(
+        c => c.courseId && !existingIds.has(c.courseId)
+      );
+      const toUpdate = aggregatedCourses.filter(
+        c => c.courseId && existingIds.has(c.courseId)
+      );
+
+      // 4) Inserts
+      if (toInsert.length > 0) {
+        const { error: insErr } = await supabase.from("Attendance").insert(
+          toInsert.map(course => ({
+            userId,
+            courseId: course.courseId,
+            summary: course.summary,
+            totalLessonUnits: course.lessonUnits,
+            ects: course.ects,
+            missedLessonUnits: 0,
+            progress: 0,
+          }))
+        );
+        if (insErr) throw insErr;
+      }
+
+      // 5) Updates
+      for (const course of toUpdate) {
+        const { error: updErr } = await supabase
+          .from("Attendance")
+          .update({
+            summary: course.summary,
+            totalLessonUnits: course.lessonUnits,
+            ects: course.ects,
+          })
+          .eq("userId", userId)
+          .eq("courseId", course.courseId!);
+        if (updErr) throw updErr;
+      }
+
+      alert("Courses and attendance saved successfully.");
+    } catch (err: any) {
+      console.error("Save error:", err);
+      setError("Fehler beim Speichern der Daten: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [aggregatedCourses, deletedCourseIds]);
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles['form-row']}>
-        <label htmlFor="icsUrl">ICS URL:</label>
-        <input
-          type="text"
-          id="icsUrl"
-          value={icsUrl}
-          onChange={(e) => setIcsUrl(e.target.value)}
-          placeholder="Enter your ICS URL here..."
-        />
-        <button onClick={handleFetchICS} disabled={loading}>
-          Fetch Courses (from ICS)
-        </button>
-      </div>
-
       {loading && <Spinner />}
       {error && <p className="error">{error}</p>}
 
-      {uniqueCourses.length > 0 && (
-        <>
-          <div className={styles['courses-container']}>
-            {uniqueCourses.map((course, index) => (
-              <div key={(course as any).id || index} className={styles['course-card']}>
-                <div className={`${styles['form-group']} ${styles['summary']}`}>
+      {!loading && rawCourses.length === 0 && (
+        <div className={styles["form-row"]}>
+          <label htmlFor="icsUrl">ICS URL:</label>
+          <input
+            id="icsUrl"
+            type="text"
+            value={icsUrl}
+            onChange={e => setIcsUrl(e.target.value)}
+            placeholder="Enter your ICS URL"
+          />
+          <button onClick={handleFetchICS} disabled={loading}>
+            Fetch Courses
+          </button>
+        </div>
+      )}
+
+      {aggregatedCourses.length > 0 && (
+        <> 
+          <div className={styles["courses-container"]}>
+            {aggregatedCourses.map((course, i) => (
+              <div key={i} className={styles["course-card"]}>
+                <div className={`${styles["form-group"]} ${styles.summary}`}>
                   <label>Summary:</label>
                   <input
-                    type="text"
                     value={course.summary}
-                    onChange={(e) => handleChange(index, 'summary', e.target.value)}
+                    onChange={e => handleChange(i, "summary", e.target.value)}
                   />
                 </div>
-
-                <div className={`${styles['form-group']} ${styles['course-id']}`}>
+                <div className={`${styles["form-group"]} ${styles["course-id"]}`}>
                   <label>Course ID:</label>
                   <input
-                    type="text"
                     value={course.courseId}
-                    onChange={(e) => handleChange(index, 'courseId', e.target.value)}
+                    onChange={e => handleChange(i, "courseId", e.target.value)}
                   />
                 </div>
-
-                <div className={`${styles['form-group']} ${styles['ects']}`}>
+                <div className={`${styles["form-group"]} ${styles.ects}`}>
                   <label>ECTS:</label>
                   <input
                     type="number"
                     value={course.ects}
-                    onChange={(e) => handleChange(index, 'ects', e.target.value)}
+                    onChange={e => handleChange(i, "ects", e.target.value)}
                   />
                 </div>
-
-                <div className={`${styles['form-group']} ${styles['lesson-units']}`}>
+                <div className={`${styles["form-group"]} ${styles["lesson-units"]}`}>
                   <label>Lesson Units:</label>
                   <input
                     type="number"
                     value={course.lessonUnits}
-                    onChange={(e) => handleChange(index, 'lessonUnits', e.target.value)}
+                    onChange={e => handleChange(i, "lessonUnits", e.target.value)}
                   />
                 </div>
-
                 <button
-                  className={styles['delete-button']}
-                  onClick={() => handleDelete(index)}
+                  className={styles["delete-button"]}
+                  onClick={() => handleDelete(i)}
                   disabled={loading}
                 >
                   Delete Course
@@ -203,41 +244,13 @@ export default function ConfiguratorPage() {
               </div>
             ))}
           </div>
-        <div className={styles['actions-row']}>
-            <button onClick={handleAdd} className="button-with-icon">
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-              d="M6 12H18M12 6V18"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              />
-            </svg>
-            Add Course
-            </button>
-          <button onClick={handleSaveAll} className="button-with-icon"><svg
-          fill="currentColor"
-          width="24px"
-          height="24px"
-          viewBox="0 0 256 256"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g fillRule="evenodd">
-            <path d="M65.456 48.385c10.02 0 96.169-.355 96.169-.355 2.209-.009 5.593.749 7.563 1.693 0 0-1.283-1.379.517.485 1.613 1.67 35.572 36.71 36.236 37.416.665.707.241.332.241.332.924 2.007 1.539 5.48 1.539 7.691v95.612c0 7.083-8.478 16.618-16.575 16.618-8.098 0-118.535-.331-126.622-.331-8.087 0-16-6.27-16.356-16.1-.356-9.832.356-118.263.356-126.8 0-8.536 6.912-16.261 16.932-16.261zm-1.838 17.853l.15 121c.003 2.198 1.8 4.003 4.012 4.015l120.562.638a3.971 3.971 0 0 0 4-3.981l-.143-90.364c-.001-1.098-.649-2.616-1.445-3.388L161.52 65.841c-.801-.776-1.443-.503-1.443.601v35.142c0 3.339-4.635 9.14-8.833 9.14H90.846c-4.6 0-9.56-4.714-9.56-9.14s-.014-35.14-.014-35.14c0-1.104-.892-2.01-1.992-2.023l-13.674-.155a1.968 1.968 0 0 0-1.988 1.972zm32.542.44v27.805c0 1.1.896 2.001 2 2.001h44.701c1.113 0 2-.896 2-2.001V66.679a2.004 2.004 0 0 0-2-2.002h-44.7c-1.114 0-2 .896-2 2.002z" />
-            <path d="M127.802 119.893c16.176.255 31.833 14.428 31.833 31.728s-14.615 31.782-31.016 31.524c-16.401-.259-32.728-14.764-32.728-31.544s15.735-31.963 31.91-31.708zm-16.158 31.31c0 9.676 7.685 16.882 16.218 16.843 8.534-.039 15.769-7.128 15.812-16.69.043-9.563-7.708-16.351-15.985-16.351-8.276 0-16.045 6.52-16.045 16.197z" />
-          </g>
-        </svg>Save Changes</button>
-        
-        </div>
-      </>
-    )}
-  </div>
+
+          <div className={styles["actions-row"]}>
+            <button onClick={handleAdd}>➕ Add Course</button>
+            <button onClick={handleSaveAll}>💾 Save Changes</button>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
