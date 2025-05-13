@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Spinner from "@/components/Spinner/Spinner";
 import { EditableCourse } from "@/components/CourseCard/CourseCard";
@@ -10,8 +10,23 @@ export default function ConfiguratorPage() {
   const [icsUrl, setIcsUrl] = useState<string>("");
   const [rawCourses, setRawCourses] = useState<EditableCourse[]>([]);
   const [deletedCourseIds, setDeletedCourseIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+
+  // Helper to aggregate courses by courseId or summary
+  const aggregateCourses = useCallback((courses: EditableCourse[]) => {
+    const map = new Map<string, EditableCourse>();
+    courses.forEach(course => {
+      const key = course.courseId || course.summary;
+      if (!map.has(key)) {
+        map.set(key, { ...course });
+      } else {
+        const existing = map.get(key)!;
+        existing.lessonUnits += course.lessonUnits;
+      }
+    });
+    return Array.from(map.values());
+  }, []);
 
   // Fetch attendance from DB on mount
   useEffect(() => {
@@ -29,14 +44,13 @@ export default function ConfiguratorPage() {
           .eq("userId", userId);
         if (error) throw error;
 
-        setRawCourses(
-          data.map(item => ({
-            courseId: item.courseId,
-            summary: item.summary,
-            lessonUnits: item.totalLessonUnits,
-            ects: item.ects || 0,
-          }))
-        );
+        const fetched = data.map(item => ({
+          courseId: item.courseId,
+          summary: item.summary,
+          lessonUnits: item.totalLessonUnits,
+          ects: item.ects || 0,
+        }));
+        setRawCourses(aggregateCourses(fetched));
       } catch (err: any) {
         console.error("Fetch error:", err);
         setError("Fehler beim Laden der Daten: " + err.message);
@@ -44,7 +58,7 @@ export default function ConfiguratorPage() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [aggregateCourses]);
 
   const handleFetchICS = useCallback(async () => {
     setLoading(true);
@@ -53,14 +67,14 @@ export default function ConfiguratorPage() {
       const res = await fetch(`/api/calendar?icsUrl=${encodeURIComponent(icsUrl)}`);
       if (!res.ok) throw new Error("ICS fetch failed");
       const icsData = await res.json();
-      setRawCourses(icsData.events);
+      setRawCourses(aggregateCourses(icsData.events));
     } catch (err: any) {
       console.error(err);
       setError("Error fetching courses from ICS. " + err.message);
     } finally {
       setLoading(false);
     }
-  }, [icsUrl]);
+  }, [icsUrl, aggregateCourses]);
 
   // Local edits
   const handleChange = useCallback(
@@ -90,19 +104,6 @@ export default function ConfiguratorPage() {
     setRawCourses(prev => prev.filter((_, i) => i !== index));
   };
 
-  const aggregatedCourses = useMemo<EditableCourse[]>(
-    () => {
-      const map = new Map<string, EditableCourse>();
-      rawCourses.forEach(course => {
-        const key = course.courseId || course.summary;
-        if (!map.has(key)) map.set(key, { ...course });
-        else map.get(key)!.lessonUnits += course.lessonUnits;
-      });
-      return Array.from(map.values());
-    },
-    [rawCourses]
-  );
-
   // Save all: deletes + inserts + updates separately
   const handleSaveAll = useCallback(async () => {
     setLoading(true);
@@ -131,11 +132,12 @@ export default function ConfiguratorPage() {
       if (fetchErr) throw fetchErr;
       const existingIds = new Set(existingEntries.map(e => e.courseId));
 
-      // 3) Prepare inserts and updates
-      const toInsert = aggregatedCourses.filter(
+      // 3) Prepare inserts and updates using aggregation
+      const aggregated = aggregateCourses(rawCourses);
+      const toInsert = aggregated.filter(
         c => c.courseId && !existingIds.has(c.courseId)
       );
-      const toUpdate = aggregatedCourses.filter(
+      const toUpdate = aggregated.filter(
         c => c.courseId && existingIds.has(c.courseId)
       );
 
@@ -176,7 +178,7 @@ export default function ConfiguratorPage() {
     } finally {
       setLoading(false);
     }
-  }, [aggregatedCourses, deletedCourseIds]);
+  }, [rawCourses, deletedCourseIds, aggregateCourses]);
 
   return (
     <div className={styles.wrapper}>
@@ -199,26 +201,26 @@ export default function ConfiguratorPage() {
         </div>
       )}
 
-      {aggregatedCourses.length > 0 && (
-        <> 
+      {rawCourses.length > 0 && (
+        <>
           <div className={styles["courses-container"]}>
-            {aggregatedCourses.map((course, i) => (
+            {rawCourses.map((course, i) => (
               <div key={i} className={styles["course-card"]}>
-                <div className={`${styles["form-group"]} ${styles.summary}`}>
+                <div className={`${styles["form-group"]} ${styles.summary}`}>  
                   <label>Summary:</label>
                   <input
                     value={course.summary}
                     onChange={e => handleChange(i, "summary", e.target.value)}
                   />
                 </div>
-                <div className={`${styles["form-group"]} ${styles["course-id"]}`}>
+                <div className={`${styles["form-group"]} ${styles["course-id"]}`}>  
                   <label>Course ID:</label>
                   <input
                     value={course.courseId}
                     onChange={e => handleChange(i, "courseId", e.target.value)}
                   />
                 </div>
-                <div className={`${styles["form-group"]} ${styles.ects}`}>
+                <div className={`${styles["form-group"]} ${styles.ects}`}>  
                   <label>ECTS:</label>
                   <input
                     type="number"
@@ -226,7 +228,7 @@ export default function ConfiguratorPage() {
                     onChange={e => handleChange(i, "ects", e.target.value)}
                   />
                 </div>
-                <div className={`${styles["form-group"]} ${styles["lesson-units"]}`}>
+                <div className={`${styles["form-group"]} ${styles["lesson-units"]}`}>  
                   <label>Lesson Units:</label>
                   <input
                     type="number"
