@@ -1,6 +1,9 @@
 /* ========================
    General Styles & Variables
 ======================== */
+
+@import 'tailwindcss';
+
 :root {
   --glass-bg: rgba(0, 0, 0, 0.3);
   --glass-color: #fff;
