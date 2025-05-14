@@ -25,9 +25,6 @@ export default function CourseCard({
   onDelete,
   disabled = false,
 }: CourseCardProps) {
-  if (index === 0) {
-    throw new Error("Test Error");
-  }
   return (
     <div className={styles["course-card"]}>
       <div className={`${styles["form-group"]} ${styles.summary}`}>  

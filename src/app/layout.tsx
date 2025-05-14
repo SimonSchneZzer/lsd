@@ -1,8 +1,10 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import React, { Suspense } from 'react';
 import SideNav from '../components/SideNav';
 import BottomNav from '../components/BottomNav';
 import Header from '../components/Header';
+import Spinner from '../components/Spinner/Spinner';
 import SessionProviderWrapper from '@/components/SessionProviderWrapper';
 import ParticleBackground from '@/components/ParticleBackground/ParticleBackground';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
@@ -22,7 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body>
-      <ParticleBackground />
+        <ParticleBackground />
         <SessionProviderWrapper initialSession={session}>
           <div className="layout">
             <aside className="side-nav glassCard">
@@ -30,7 +32,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </aside>
             <main className="main-content glassCard">
               <Header />
-              {children}
+              <Suspense fallback={<Spinner />}>
+                {children}
+              </Suspense>
             </main>
             <footer className="bottom-nav glassCard">
               <BottomNav />
