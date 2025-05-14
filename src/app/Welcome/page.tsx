@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import styles from './welcome.module.css';
 import { z } from 'zod';
+import { useToastStore } from '@/store/toastStore'; // 👈 global toast store
 
-// Reusable schema
 const loginSchema = z.object({
   email: z.string().email({ message: 'Ungültige E-Mail-Adresse' }),
   password: z.string().min(6, { message: 'Passwort muss mindestens 6 Zeichen lang sein' }),
@@ -24,15 +24,12 @@ export default function AuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const { setMessage } = useToastStore(); // 👈 use global toast
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setMessage('');
 
     const inputData = { email, password, confirmPassword };
 
@@ -42,7 +39,7 @@ export default function AuthPage() {
 
     if (!result.success) {
       const firstError = Object.values(result.error.flatten().fieldErrors)[0]?.[0];
-      setError(firstError || 'Ungültige Eingabe');
+      setMessage(firstError || 'Ungültige Eingabe');
       return;
     }
 
@@ -52,7 +49,7 @@ export default function AuthPage() {
       setLoading(false);
 
       if (error) {
-        setError(error.message);
+        setMessage(error.message);
       } else {
         setMessage('Registrierung erfolgreich! Willkommen!');
       }
@@ -61,8 +58,9 @@ export default function AuthPage() {
       setLoading(false);
 
       if (error) {
-        setError(error.message);
+        setMessage(error.message); // 👈 show in toast
       } else {
+        setMessage('Erfolgreich eingeloggt!');
         router.push('/');
       }
     }
@@ -70,8 +68,6 @@ export default function AuthPage() {
 
   const toggleMode = () => {
     setMode(prev => (prev === 'login' ? 'register' : 'login'));
-    setError('');
-    setMessage('');
     setEmail('');
     setPassword('');
     setConfirmPassword('');
@@ -95,9 +91,6 @@ export default function AuthPage() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {message && <p style={{ color: 'green' }}>{message}</p>}
-
         <input
           type="email"
           placeholder="Email"
