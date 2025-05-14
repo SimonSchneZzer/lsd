@@ -31,7 +31,7 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(''); setMessage('');
+    setMessage(''); // clear old toast
 
     const inputData = { email, password, confirmPassword };
     const result = mode === 'register'
@@ -48,17 +48,29 @@ export default function AuthPage() {
     if (mode === 'register') {
       const { error } = await supabase.auth.signUp({ email, password });
       setLoading(false);
-      error ? setError(error.message) : setMessage('Registrierung erfolgreich! Willkommen!');
+      if (error) {
+        setMessage(error.message);
+      } else {
+        setMessage('Registrierung erfolgreich! Willkommen!');
+      }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setLoading(false);
-      error ? setError(error.message) : router.push('/');
+      if (error) {
+        setMessage(error.message);
+      } else {
+        setMessage('Erfolgreich eingeloggt!');
+        router.push('/');
+      }
     }
   };
 
   const toggleMode = () => {
     setMode(prev => prev === 'login' ? 'register' : 'login');
-    setError(''); setMessage(''); setEmail(''); setPassword(''); setConfirmPassword('');
+    setMessage('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
   };
 
   return (
@@ -99,9 +111,6 @@ export default function AuthPage() {
 
       {/* Form */}
       <form className="w-full max-w-xs space-y-4" onSubmit={handleSubmit}>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        {message && <p className="text-sm text-green-600">{message}</p>}
-
         {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-900">
