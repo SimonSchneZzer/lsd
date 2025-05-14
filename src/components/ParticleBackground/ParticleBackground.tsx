@@ -48,6 +48,10 @@ export default function ParticleBackground() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Prüfen, ob Dunkelmodus aktiv ist
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const particleColor = isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)';
+
       // Partikel bewegen und zeichnen
       particles.forEach(p => {
         p.x += p.vx;
@@ -57,7 +61,7 @@ export default function ParticleBackground() {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.fillStyle = particleColor;
         ctx.fill();
       });
 
@@ -70,10 +74,13 @@ export default function ParticleBackground() {
           const dy = p1.y - p2.y;
           const dist = Math.hypot(dx, dy);
           if (dist < connectDistance) {
+            const alpha = 1 - dist / connectDistance;
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(255,255,255,${1 - dist / connectDistance})`;
+            ctx.strokeStyle = isDark
+              ? `rgba(255,255,255,${alpha})`
+              : `rgba(0,0,0,${alpha * 0.8})`;
             ctx.stroke();
           }
         }
