@@ -16,7 +16,6 @@ export default function TutorialPage() {
         </Link>
       </nav>
 
-      {/* Header */}
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Import-Tutorial</h1>
         <p className="text-gray-600">
@@ -24,9 +23,7 @@ export default function TutorialPage() {
         </p>
       </header>
 
-      {/* Schritt-für-Schritt-Anleitung */}
       <section className="space-y-12">
-        {/* Schritt 1 */}
         <div>
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">Schritt 1: Veranstaltungsseite öffnen</h2>
           <p className="text-gray-700">
@@ -58,8 +55,6 @@ export default function TutorialPage() {
             />
           </div>
         </div>
-
-        {/* Schritte 3–7 */}
         <div>
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">Schritt 3 bis 7: Link importieren</h2>
           <ol className="list-decimal list-inside space-y-3 text-gray-700">
