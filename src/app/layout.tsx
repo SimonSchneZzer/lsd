@@ -1,10 +1,10 @@
 import './globals.css';
-import '../styles/background.css';
 import type { Metadata } from 'next';
 import SideNav from '../components/SideNav';
 import BottomNav from '../components/BottomNav';
 import Header from '../components/Header';
 import SessionProviderWrapper from '@/components/SessionProviderWrapper';
+import ParticleBackground from '@/components/ParticleBackground/ParticleBackground';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
@@ -22,6 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body>
+      <ParticleBackground />
         <SessionProviderWrapper initialSession={session}>
           <div className="layout">
             <aside className="side-nav glassCard">
