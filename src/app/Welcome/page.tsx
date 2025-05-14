@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
 import { z } from 'zod';
+import { useToastStore } from '@/store/toastStore'; // 👈 global toast store
 
 // Validation-Schemas
 const loginSchema = z.object({
@@ -24,9 +25,8 @@ export default function AuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const { setMessage } = useToastStore(); // 👈 use global toast
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +40,7 @@ export default function AuthPage() {
 
     if (!result.success) {
       const firstError = Object.values(result.error.flatten().fieldErrors)[0]?.[0];
-      setError(firstError || 'Ungültige Eingabe');
+      setMessage(firstError || 'Ungültige Eingabe');
       return;
     }
 
