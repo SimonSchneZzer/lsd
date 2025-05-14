@@ -27,10 +27,15 @@ export function useConfigurator() {
     const load = async () => {
       setLoading(true);
       setError("");
+  
       const id = await getUserId();
       setUserId(id);
-      if (!id) return;
-
+  
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+  
       try {
         const courses = await fetchCourses(id);
         setRawCourses(aggregateCourses(courses));
@@ -40,6 +45,7 @@ export function useConfigurator() {
         setLoading(false);
       }
     };
+  
     load();
   }, [aggregateCourses]);
 

@@ -3,11 +3,16 @@
 import { useAttendance } from '@/hooks/useAttendance';
 import ProgressBar from '@/components/ProgressBar/ProgressBar';
 import Spinner from '@/components/Spinner/Spinner';
+import NotLoggedIn from '@/components/NotLoggedIn/NotLoggedIn';
 
 export default function AttendancePage() {
-  const { data, loading, handleChange } = useAttendance();
+  const { data, loading, notAuthenticated, handleChange } = useAttendance();
 
   if (loading) return <Spinner />;
+
+  if (notAuthenticated) {
+    return <NotLoggedIn context="your attendance data" />;
+  }
 
   return (
     <div>

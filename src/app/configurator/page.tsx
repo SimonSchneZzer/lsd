@@ -6,6 +6,8 @@ import CourseCard from "@/components/CourseCard/CourseCard";
 import styles from "./ConfiguratorLayout.module.css";
 import { useConfigurator } from "@/hooks/useConfigurator";
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
+import NotLoggedIn from '@/components/NotLoggedIn/NotLoggedIn';
+
 
 export default function ConfiguratorPage() {
   const {
@@ -23,11 +25,7 @@ export default function ConfiguratorPage() {
   } = useConfigurator();
 
   if (!loading && userId === null) {
-    return (
-      <div className={styles.wrapper}>
-        <p className="error">Please log in to view or edit courses.</p>
-      </div>
-    );
+    return <NotLoggedIn context="the configurator" />;
   }
 
   return (

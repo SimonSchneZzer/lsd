@@ -6,14 +6,19 @@ import { supabase } from '@/lib/supabaseClient';
 export function useAttendance() {
   const [data, setData] = useState<AttendanceData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [notAuthenticated, setNotAuthenticated] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       const session = sessionData.session;
 
-      if (sessionError || !session?.user) {
+      if (sessionError) {
         console.error('Session-Fehler:', sessionError);
+      }
+
+      if (!session?.user) {
+        setNotAuthenticated(true);
         setLoading(false);
         return;
       }
@@ -48,5 +53,5 @@ export function useAttendance() {
     );
   };
 
-  return { data, loading, handleChange };
+  return { data, loading, notAuthenticated, handleChange };
 }
