@@ -2,7 +2,7 @@
    General Styles & Variables
 ======================== */
 :root {
-  --glass-bg: rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(0, 0, 0, 0.3);
   --glass-color: #fff;
   --glass-radius: 3rem;
   --glass-padding: 2rem;
