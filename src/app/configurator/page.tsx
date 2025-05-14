@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import React from "react";
 import Spinner from "@/components/Spinner/Spinner";
 import CourseCard from "@/components/CourseCard/CourseCard";
 import styles from "./ConfiguratorLayout.module.css";
 import { useConfigurator } from "@/hooks/useConfigurator";
+import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 
 export default function ConfiguratorPage() {
   const {
@@ -41,7 +42,7 @@ export default function ConfiguratorPage() {
             id="icsUrl"
             type="text"
             value={icsUrl}
-            onChange={e => setIcsUrl(e.target.value)}
+            onChange={(e) => setIcsUrl(e.target.value)}
             placeholder="Enter your ICS URL"
           />
           <button onClick={handleFetchICS} disabled={loading}>
@@ -54,14 +55,15 @@ export default function ConfiguratorPage() {
         <>
           <div className={styles["courses-container"]}>
             {rawCourses.map((course, i) => (
-              <CourseCard
-                key={i}
-                course={course}
-                index={i}
-                onChange={handleChange}
-                onDelete={handleDelete}
-                disabled={loading}
-              />
+              <ErrorBoundary key={i}>
+                <CourseCard
+                  course={course}
+                  index={i}
+                  onChange={handleChange}
+                  onDelete={handleDelete}
+                  disabled={loading}
+                />
+              </ErrorBoundary>
             ))}
           </div>
 
