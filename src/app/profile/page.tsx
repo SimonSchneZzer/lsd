@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import styles from './profile.module.css';
 import Spinner from '@/components/Spinner/Spinner';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const [email, setEmail] = useState<string | null>(null);
@@ -52,7 +53,7 @@ export default function ProfilePage() {
         </div>
         <h2>You are not logged in</h2>
         <p>
-          <u><a href="/Welcome">Sign in</a></u> or <u><a href="/Welcome">register</a></u> to access your profile.
+          <u><Link href="/Welcome">Sign in</Link></u> or <u><Link href="/Welcome">register</Link></u> to access your profile.
         </p>
       </div>
     );
