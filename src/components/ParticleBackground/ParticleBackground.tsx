@@ -13,11 +13,8 @@ export default function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles: Particle[] = [];
 
-  // Anzahl der Punkte
   const particleCount = 100;
-  // Maximale Geschwindigkeit (langsamer für entspannteren Effekt)
   const maxVelocity = 0.2;
-  // Verbindungsdistanz
   const connectDistance = 100;
 
   useEffect(() => {
@@ -26,7 +23,6 @@ export default function ParticleBackground() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Canvas-Größe einstellen
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -34,7 +30,6 @@ export default function ParticleBackground() {
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    // Partikel initialisieren
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
@@ -48,11 +43,9 @@ export default function ParticleBackground() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Prüfen, ob Dunkelmodus aktiv ist
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const particleColor = isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)';
 
-      // Partikel bewegen und zeichnen
       particles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
@@ -65,7 +58,6 @@ export default function ParticleBackground() {
         ctx.fill();
       });
 
-      // Linien zwischen nahen Partikeln
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const p1 = particles[i];
@@ -91,7 +83,6 @@ export default function ParticleBackground() {
 
     animate();
 
-    // Cleanup
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', resizeCanvas);
