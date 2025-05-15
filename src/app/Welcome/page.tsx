@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
 import { z } from 'zod';
-import { useToastStore } from '@/store/toastStore'; // 👈 global toast store
+import { useToastStore } from '@/store/toastStore';
 
 // Validation-Schemas
 const loginSchema = z.object({
@@ -217,8 +217,8 @@ export default function AuthPage() {
               ? "Einloggen…"
               : "Registrieren…"
             : mode === "login"
-            ? "Einloggen"
-            : "Registrieren"}
+              ? "Einloggen"
+              : "Registrieren"}
         </button>
       </form>
     </div>

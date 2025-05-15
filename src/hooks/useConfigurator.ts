@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { EditableCourse } from "@/types/course";
 import { getUserId, fetchCourses, deleteCourses, saveCourses } from "@/lib/courseService";
+import { useToastStore } from "@/store/toastStore"; // 👈 Toast-Store importieren
 
 export function useConfigurator() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -8,7 +9,7 @@ export function useConfigurator() {
   const [rawCourses, setRawCourses] = useState<EditableCourse[]>([]);
   const [deletedCourseIds, setDeletedCourseIds] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const { setMessage } = useToastStore(); // 👈 Toast-Setter verwenden
 
   const aggregateCourses = useCallback((courses: EditableCourse[]) => {
     const map = new Map<string, EditableCourse>();
@@ -26,28 +27,26 @@ export function useConfigurator() {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      setError("");
-  
       const id = await getUserId();
       setUserId(id);
-  
+
       if (!id) {
         setLoading(false);
         return;
       }
-  
+
       try {
         const courses = await fetchCourses(id);
         setRawCourses(aggregateCourses(courses));
       } catch (err: any) {
-        setError("Fehler beim Laden der Daten: " + err.message);
+        setMessage("Fehler beim Laden der Daten: " + err.message);
       } finally {
         setLoading(false);
       }
     };
-  
+
     load();
-  }, [aggregateCourses]);
+  }, [aggregateCourses, setMessage]);
 
   const handleChange = useCallback((index: number, field: keyof EditableCourse, value: string) => {
     setRawCourses(prev => {
@@ -73,41 +72,39 @@ export function useConfigurator() {
   const handleSaveAll = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
-    setError("");
     try {
       if (deletedCourseIds.length > 0) {
         await deleteCourses(userId, deletedCourseIds);
         setDeletedCourseIds([]);
       }
       await saveCourses(userId, aggregateCourses(rawCourses));
-      alert("Courses and attendance saved successfully.");
+      setMessage("Kurse erfolgreich gespeichert.");
     } catch (err: any) {
-      setError("Fehler beim Speichern: " + err.message);
+      setMessage("Fehler beim Speichern: " + err.message);
     } finally {
       setLoading(false);
     }
-  }, [userId, deletedCourseIds, rawCourses, aggregateCourses]);
+  }, [userId, deletedCourseIds, rawCourses, aggregateCourses, setMessage]);
 
   const handleFetchICS = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
-    setError("");
     try {
       const res = await fetch(`/api/calendar?icsUrl=${encodeURIComponent(icsUrl)}`);
       if (!res.ok) throw new Error("ICS fetch failed");
       const data = await res.json();
       setRawCourses(aggregateCourses(data.events));
+      setMessage("ICS erfolgreich geladen.");
     } catch (err: any) {
-      setError("Fehler beim ICS-Import: " + err.message);
+      setMessage("Fehler beim ICS-Import: " + err.message);
     } finally {
       setLoading(false);
     }
-  }, [userId, icsUrl, aggregateCourses]);
+  }, [userId, icsUrl, aggregateCourses, setMessage]);
 
   return {
     userId,
     loading,
-    error,
     rawCourses,
     icsUrl,
     setIcsUrl,
