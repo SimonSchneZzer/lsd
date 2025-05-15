@@ -9,7 +9,7 @@ interface Props {
 
 export default function NotLoggedIn({ context = 'your profile' }: Props) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+    <div className="flex flex-col items-center justify-center px-4 py-12">
       {/* Logo */}
       <div className="mb-6">
         <Image
