@@ -83,8 +83,8 @@ export default function SideNav() {
             </div>
           </Link>
         </li>
-        <li className={isActive("/configurator") ? "active" : ""}>
-          <Link href="/configurator">
+        <li className={isActive("/dashboard/configurator") ? "active" : ""}>
+          <Link href="/dashboard/configurator">
             <div className="flex items-center gap-2">
               <svg
                 width="30"
@@ -122,8 +122,8 @@ export default function SideNav() {
             </div>
           </Link>
         </li>
-        <li className={isActive("/profile") ? "active" : ""}>
-          <Link href="/profile">
+        <li className={isActive("/dashboard/profile") ? "active" : ""}>
+          <Link href="/dashboard/profile">
             <div className="flex items-center gap-2">
               {isLoggedIn ? (
                 <svg
