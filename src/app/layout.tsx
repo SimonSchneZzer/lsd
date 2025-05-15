@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import React, { Suspense } from 'react';
+import Toast from '@/components/Toast/Toast'
 import SideNav from '../components/SideNav';
 import BottomNav from '../components/BottomNav';
 import Header from '../components/Header';
@@ -26,6 +27,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <ParticleBackground />
         <SessionProviderWrapper initialSession={session}>
+        <Toast />
           <div className="layout">
             <aside className="side-nav glassCard">
               <SideNav />

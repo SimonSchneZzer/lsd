@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { supabase } from "@/lib/supabaseClient";
-import { z } from "zod";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { supabase } from '@/lib/supabaseClient';
+import { z } from 'zod';
+import { useToastStore } from '@/store/toastStore'; // 👈 global toast store
 
 // Validation-Schemas
 const loginSchema = z.object({
@@ -24,19 +25,17 @@ const registerSchema = loginSchema
   });
 
 export default function AuthPage() {
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const { setMessage } = useToastStore(); // 👈 use global toast
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setMessage("");
+    setMessage(''); // clear old toast
 
     const inputData = { email, password, confirmPassword };
     const result =
@@ -45,10 +44,8 @@ export default function AuthPage() {
         : loginSchema.safeParse({ email, password });
 
     if (!result.success) {
-      const firstError = Object.values(
-        result.error.flatten().fieldErrors
-      )[0]?.[0];
-      setError(firstError || "Ungültige Eingabe");
+      const firstError = Object.values(result.error.flatten().fieldErrors)[0]?.[0];
+      setMessage(firstError || 'Ungültige Eingabe');
       return;
     }
 
@@ -56,26 +53,32 @@ export default function AuthPage() {
     if (mode === "register") {
       const { error } = await supabase.auth.signUp({ email, password });
       setLoading(false);
-      error
-        ? setError(error.message)
-        : setMessage("Registrierung erfolgreich! Willkommen!");
+      if (error) {
+        setMessage(error.message);
+      } else {
+        setMessage('Registrierung erfolgreich! Willkommen!');
+      }
     } else {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       setLoading(false);
-      error ? setError(error.message) : router.push("/");
+      if (error) {
+        setMessage(error.message);
+      } else {
+        setMessage('Erfolgreich eingeloggt!');
+        router.push('/');
+      }
     }
   };
 
   const toggleMode = () => {
-    setMode((prev) => (prev === "login" ? "register" : "login"));
-    setError("");
-    setMessage("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
+    setMode(prev => prev === 'login' ? 'register' : 'login');
+    setMessage('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
   };
 
   return (
@@ -123,9 +126,6 @@ export default function AuthPage() {
 
       {/* Form */}
       <form className="w-full max-w-xs space-y-4" onSubmit={handleSubmit}>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        {message && <p className="text-sm text-green-600">{message}</p>}
-
         {/* Email */}
         <div>
           <label
