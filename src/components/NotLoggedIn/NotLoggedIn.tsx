@@ -22,12 +22,12 @@ export default function NotLoggedIn({ context = 'your profile' }: Props) {
       </div>
 
       {/* Titel */}
-      <h2 className="text-center text-2xl font-bold text-gray-900 mb-4">
+      <h2 className="text-center text-2xl font-bold text-gray-900 mb-4 dark:text-white">
         You are not logged in
       </h2>
 
       {/* Hinweis mit Links */}
-      <p className="text-center text-gray-700">
+      <p className="text-center text-gray-700 dark:text-white">
         <Link
           href="/Welcome"
           className="underline text-indigo-600 hover:text-indigo-500 font-medium text-inherit"
