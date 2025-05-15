@@ -34,7 +34,7 @@ export default function CourseOverviewCard({
           </div>
           <div className="text-right">
             <span className="block">Course ID</span>
-            <span className="text-base font-mono text-gray-500 dark:text-gray-400">{courseId}</span>
+            <span className="text-base font-medium text-gray-900 dark:text-white">{courseId}</span>
           </div>
         </div>
 
