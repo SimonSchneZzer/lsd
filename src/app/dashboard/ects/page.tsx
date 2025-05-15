@@ -1,19 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CalendarEvent } from '@/types/event';
 import Spinner from '@/components/Spinner/Spinner';
 import NotLoggedIn from '@/components/NotLoggedIn/NotLoggedIn';
-import { getUserId } from '@/lib/courseService';
-
-type GroupedEvent = {
-  courseId: string;
-  summary: string;
-  ects: number;
-};
+import { getUserId, fetchCourses } from '@/lib/courseService';
+type GroupedEvent = { courseId: string; summary: string; ects: number };
 
 export default function ECTSPage() {
-  const [groupedEvents, setGroupedEvents] = useState<GroupedEvent[]>([]);
+  const [courses, setCourses] = useState<GroupedEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -28,31 +22,20 @@ export default function ECTSPage() {
         return;
       }
 
-      fetch('/api/calendar')
-        .then((res) => res.json())
-        .then((data) => {
-          const events: CalendarEvent[] = data.events || [];
-          const grouped: Record<string, GroupedEvent> = {};
-
-          for (const event of events) {
-            if (!event.courseId) continue;
-
-            if (!grouped[event.courseId]) {
-              grouped[event.courseId] = {
-                courseId: event.courseId,
-                summary: event.summary,
-                ects: event.ects,
-              };
-            }
-          }
-
-          setGroupedEvents(Object.values(grouped));
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error('Error fetching calendar:', err);
-          setLoading(false);
-        });
+      try {
+        const data = await fetchCourses(id);
+        // Map EditableCourse to GroupedEvent
+        const mapped = data.map((course) => ({
+          courseId: course.courseId,
+          summary: course.summary,
+          ects: course.ects,
+        }));
+        setCourses(mapped);
+      } catch (err) {
+        console.error('Error fetching courses:', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     load();
@@ -63,14 +46,14 @@ export default function ECTSPage() {
 
   return (
     <div>
-      {groupedEvents.length === 0 ? (
-        <p>No events found. This feature is currently only available for MMT-Bachelor Students</p>
+      {courses.length === 0 ? (
+        <p>No courses found. This feature is currently only available for students with saved courses.</p>
       ) : (
         <ul>
-          {groupedEvents.map((event) => (
-            <li key={event.courseId} className="mb-4">
-              <p><strong>Summary:</strong> {event.summary.replace(/^.*? - /, '')}</p>
-              <p><strong>ECTS:</strong> {event.ects}</p>
+          {courses.map((course) => (
+            <li key={course.courseId} className="mb-4">
+              <p><strong>Summary:</strong> {course.summary.replace(/^.*? - /, '')}</p>
+              <p><strong>ECTS:</strong> {course.ects}</p>
             </li>
           ))}
         </ul>
