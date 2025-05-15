@@ -1,13 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
-import Spinner from "@/components/Spinner/Spinner";
-import CourseCard from "@/components/CourseCard/CourseCard";
-import styles from "./ConfiguratorLayout.module.css";
-import { useConfigurator } from "@/hooks/useConfigurator";
-import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
+import React from 'react';
+import Spinner from '@/components/Spinner/Spinner';
+import CourseCard from '@/components/CourseCard/CourseCard';
+import { useConfigurator } from '@/hooks/useConfigurator';
+import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 import NotLoggedIn from '@/components/NotLoggedIn/NotLoggedIn';
-
 
 export default function ConfiguratorPage() {
   const {
@@ -29,21 +27,28 @@ export default function ConfiguratorPage() {
   }
 
   return (
-    <div className={styles.wrapper}>
+    <div className="p-6">
       {loading && <Spinner />}
-      {error && <p className="error">{error}</p>}
+      {error && <p className="text-red-600 mb-4">{error}</p>}
 
       {!loading && rawCourses.length === 0 && (
-        <div className={styles["form-row"]}>
-          <label htmlFor="icsUrl">ICS URL:</label>
+        <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
+          <label htmlFor="icsUrl" className="font-medium text-gray-700 dark:text-gray-300">
+            ICS URL:
+          </label>
           <input
             id="icsUrl"
             type="text"
             value={icsUrl}
-            onChange={(e) => setIcsUrl(e.target.value)}
+            onChange={e => setIcsUrl(e.target.value)}
             placeholder="Enter your ICS URL"
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <button onClick={handleFetchICS} disabled={loading}>
+          <button
+            onClick={handleFetchICS}
+            disabled={loading}
+            className="px-4 py-2 border-2 border-[var(--glass-color)] bg-[var(--glass-bg)] text-[var(--glass-color)] rounded-[var(--glass-radius)] cursor-pointer transition-colors duration-300 ease-in-out hover:bg-[var(--glass-color)] hover:text-[var(--glass-bg)] hover:border-[var(--glass-bg)] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             Fetch Courses
           </button>
         </div>
@@ -51,7 +56,7 @@ export default function ConfiguratorPage() {
 
       {rawCourses.length > 0 && (
         <>
-          <div className={styles["courses-container"]}>
+            <div className="space-y-6 max-w-[1200px] mx-auto ">
             {rawCourses.map((course, i) => (
               <ErrorBoundary key={i}>
                 <CourseCard
@@ -65,9 +70,19 @@ export default function ConfiguratorPage() {
             ))}
           </div>
 
-          <div className={styles["actions-row"]}>
-            <button onClick={handleAdd}>➕ Add Course</button>
-            <button onClick={handleSaveAll}>💾 Save Changes</button>
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={handleAdd}
+              className="px-4 py-2 border-2 border-[var(--glass-color)] bg-[var(--glass-bg)] text-[var(--glass-color)] rounded-[var(--glass-radius)] cursor-pointer transition-colors duration-300 ease-in-out hover:bg-[var(--glass-color)] hover:text-white hover:border-[var(--glass-bg)] hover:dark:text-black"
+            >
+              ➕ Add Course
+            </button>
+            <button
+              onClick={handleSaveAll}
+              className="px-4 py-2 border-2 border-[var(--glass-color)] bg-[var(--glass-bg)] text-[var(--glass-color)] rounded-[var(--glass-radius)] cursor-pointer transition-colors duration-300 ease-in-out hover:bg-[var(--glass-color)] hover:text-white hover:border-[var(--glass-bg)] hover:dark:text-black"
+            >
+              💾 Save Changes
+            </button>
           </div>
         </>
       )}
