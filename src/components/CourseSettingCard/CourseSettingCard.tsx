@@ -9,7 +9,7 @@ export interface EditableCourse {
   ects: number;
 }
 
-interface CourseCardProps {
+interface CourseSettingCardProps {
   course: EditableCourse;
   index: number;
   onChange: (index: number, field: keyof EditableCourse, value: string) => void;
@@ -17,13 +17,13 @@ interface CourseCardProps {
   disabled?: boolean;
 }
 
-export default function CourseCard({
+export default function CourseSettingCard({
   course,
   index,
   onChange,
   onDelete,
   disabled = false,
-}: CourseCardProps) {
+}: CourseSettingCardProps) {
   return (
     <div className="grid grid-cols-1 p-2 md:p-8 md:grid-rows-2 gap-4 mb-6 border-b border-black dark:border-white">
       {/* Course ID */}
