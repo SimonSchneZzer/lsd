@@ -4,10 +4,17 @@ import { useEffect, useState } from 'react';
 import Spinner from '@/components/Spinner/Spinner';
 import NotLoggedIn from '@/components/NotLoggedIn/NotLoggedIn';
 import { getUserId, fetchCourses } from '@/lib/courseService';
-type GroupedEvent = { courseId: string; summary: string; ects: number };
+
+type CourseWithHome = {
+  courseId: string;
+  summary: string;
+  ects: number;
+  lessonUnits: number;
+  homeHours: number;
+};
 
 export default function ECTSPage() {
-  const [courses, setCourses] = useState<GroupedEvent[]>([]);
+  const [courses, setCourses] = useState<CourseWithHome[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -24,12 +31,22 @@ export default function ECTSPage() {
 
       try {
         const data = await fetchCourses(id);
-        // Map EditableCourse to GroupedEvent
-        const mapped = data.map((course) => ({
-          courseId: course.courseId,
-          summary: course.summary,
-          ects: course.ects,
-        }));
+        const mapped: CourseWithHome[] = data.map((course) => {
+          // Calculate contact hours: each lesson unit is 45 minutes
+          const contactHours = (course.lessonUnits * 45) / 60;
+          // Total required hours per ECTS: 25 hours
+          const totalHours = course.ects * 25;
+          // Home study hours = total hours minus contact hours
+          const homeHours = parseFloat((totalHours - contactHours).toFixed(1));
+
+          return {
+            courseId: course.courseId,
+            summary: course.summary,
+            ects: course.ects,
+            lessonUnits: course.lessonUnits,
+            homeHours,
+          };
+        });
         setCourses(mapped);
       } catch (err) {
         console.error('Error fetching courses:', err);
@@ -52,8 +69,10 @@ export default function ECTSPage() {
         <ul>
           {courses.map((course) => (
             <li key={course.courseId} className="mb-4">
-              <p><strong>Summary:</strong> {course.summary.replace(/^.*? - /, '')}</p>
+              <p><strong>Course:</strong> {course.summary.replace(/^.*? - /, '')}</p>
               <p><strong>ECTS:</strong> {course.ects}</p>
+              <p><strong>Contact Hours:</strong> {(course.lessonUnits * 45 / 60).toFixed(1)}h</p>
+              <p><strong>Home Study Hours:</strong> {course.homeHours}h</p>
             </li>
           ))}
         </ul>
