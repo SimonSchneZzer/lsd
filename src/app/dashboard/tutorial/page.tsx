@@ -6,33 +6,25 @@ import Link from 'next/link';
 export default function TutorialPage() {
   return (
     <div className="min-h-screen px-6 py-12">
-      {/* Navigation */}
-      <nav className="mb-6">
-        <Link
-          href="/Welcome"
-          className="inline-flex items-center text-indigo-600 hover:text-indigo-500 font-medium"
-        >
-          ← Zurück zum Dashboard
-        </Link>
-      </nav>
+    
 
-      <header className="mb-8 text-center">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Import-Tutorial</h1>
-        <p className="text-gray-600">
+      <header className="mb-8">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-2 dark:text-white">Import-Tutorial</h1>
+        <p className="text-gray-600 dark:text-white">
           Folge diesen Schritten, um deinen Stundenplan einzubinden.
         </p>
       </header>
 
       <section className="space-y-12">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Schritt 1: Veranstaltungsseite öffnen</h2>
-          <p className="text-gray-700">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2 dark:text-white">Schritt 1: Veranstaltungsseite öffnen</h2>
+          <p className="text-gray-700 dark:text-white">
             Rufe folgende Seite auf:{' '}
             <a
               href="https://myplan.fh-salzburg.ac.at/en/events.php"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline text-indigo-600 hover:text-indigo-500"
+              className="underline text-indigo-600 hover:text-indigo-500 dark:text-white"
             >
               https://myplan.fh-salzburg.ac.at/events.php
             </a>
@@ -41,11 +33,11 @@ export default function TutorialPage() {
 
         {/* Schritt 2 */}
         <div>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Schritt 2: Button anklicken</h2>
-          <p className="text-gray-700 mb-4">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2 dark:text-white">Schritt 2: Button anklicken</h2>
+          <p className="text-gray-700 mb-4 dark:text-white">
             Scrolle ans Seitenende und klicke auf den Button, wie im Bild gezeigt.
           </p>
-          <div className="flex justify-center">
+          <div className="flex mt-4">
             <Image
               src="/images/tutorial/tut-image1.png"
               width={300}
@@ -56,14 +48,14 @@ export default function TutorialPage() {
           </div>
         </div>
         <div>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Schritt 3 bis 7: Link importieren</h2>
-          <ol className="list-decimal list-inside space-y-3 text-gray-700">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2 dark:text-white">Schritt 3 bis 7: Link importieren</h2>
+          <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-white">
             <li>Kopiere den angezeigten ICS-Link.</li>
             <li>
               Wechsle zum Lazy Student Dashboard →{' '}
               <Link
                 href="/configurator"
-                className="text-indigo-600 hover:text-indigo-500 underline"
+                className="text-indigo-600 hover:text-indigo-500 underline dark:text-white"
               >
                 Course Settings
               </Link>

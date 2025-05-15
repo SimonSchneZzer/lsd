@@ -17,7 +17,7 @@ export default function SideNav() {
       <ul>
         <li className={isActive("/dashboard/attendance") ? "active" : ""}>
           <Link href="/dashboard/attendance">
-            <div className="flex items-center gap-2 text-black">
+            <div className="flex items-center gap-2">
               <svg
                 width="30"
                 height="30"
@@ -64,7 +64,7 @@ export default function SideNav() {
         </li>
         <li className={isActive("/dashboard/ects") ? "active" : ""}>
           <Link href="/dashboard/ects">
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="30"
@@ -85,7 +85,7 @@ export default function SideNav() {
         </li>
         <li className={isActive("/configurator") ? "active" : ""}>
           <Link href="/configurator">
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="flex items-center gap-2">
               <svg
                 width="30"
                 height="30"
@@ -124,9 +124,8 @@ export default function SideNav() {
         </li>
         <li className={isActive("/profile") ? "active" : ""}>
           <Link href="/profile">
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="flex items-center gap-2">
               {isLoggedIn ? (
-                // Logged-in user icon
                 <svg
                   width="30"
                   height="30"
@@ -214,7 +213,7 @@ export default function SideNav() {
         </li>
         <li className={isActive("/dashboard/tutorial") ? "active" : ""}>
           <Link href="/dashboard/tutorial">
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="flex items-center gap-2">
               <svg
                 width="30"
                 height="30"

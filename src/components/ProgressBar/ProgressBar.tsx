@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import styles from './ProgressBar.module.css';
 
 type ProgressBarProps = {
   summary: string;
   missed: number;
   totalLessonUnits: number;
-  onIncrement: () => void; // increase attendance (decrease missed)
-  onDecrement: () => void; // decrease attendance (increase missed)
+  onIncrement: () => void;
+  onDecrement: () => void;
 };
 
 export default function ProgressBar({
@@ -25,29 +24,60 @@ export default function ProgressBar({
       : 0;
 
   return (
-    <div className={styles['course-block']}>
-      <h2>
+    <div className="pb-[var(--glass-padding)]">
+      <h2 className="text-lg font-semibold mb-2">
         <strong>{summary.replace(/^.*? - /, '')}</strong>
       </h2>
-      <div className={styles['progress-bar']}>
+
+      {/* Progress Bar */}
+      <div className="relative h-[var(--glass-margin-bottom)] bg-[var(--glass-color)] rounded-[var(--glass-radius)] overflow-hidden">
         <div
-          className={styles['progress-fill']}
+          className="absolute top-0 left-0 h-full bg-[#F18F01] transition-all duration-300 ease-in-out"
           style={{ width: `${attendancePercentage}%` }}
         />
       </div>
-      <div className={styles['control-bar']}>
-        <div className={styles['control-row']}>
-          <button onClick={onIncrement} className={styles['control-button']}>
-            -
+
+      {/* Controls */}
+      <div className="flex justify-between items-center mt-2">
+        <div className="flex items-center gap-2">
+          <button
+        onClick={onIncrement}
+        className="
+          px-3 py-1 text-base
+          bg-[rgba(255,255,255,0.4)] text-black
+          rounded-[0.5em] border border-black
+          cursor-pointer
+          transition-colors duration-200 ease-in-out
+          hover:bg-black
+          hover:text-white
+          hover:dark:bg-white
+          hover:dark:text-black
+        "
+          >
+        -
           </button>
-          <span className={styles['percentage']}>
-            {attendancePercentage.toFixed(0)}%
-          </span>
-          <button onClick={onDecrement} className={styles['control-button']}>
-            +
+
+          <span className="font-medium">{attendancePercentage.toFixed(0)}%</span>
+
+          <button
+        onClick={onDecrement}
+        className="
+          px-3 py-1 text-base
+          bg-[rgba(255,255,255,0.4)] text-black
+          rounded-[0.5em] border border-black
+          cursor-pointer
+          transition-colors duration-200 ease-in-out
+          hover:bg-black
+          hover:text-white
+          hover:dark:bg-white
+          hover:dark:text-black
+        "
+          >
+        +
           </button>
-          <span>
-            {attended}/{totalLessonUnits} Attended
+
+          <span className="text-gray-700 dark:text-gray-300">
+        {attended}/{totalLessonUnits} Attended
           </span>
         </div>
       </div>

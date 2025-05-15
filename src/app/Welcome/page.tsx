@@ -82,7 +82,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+    <div className="flex flex-col items-center justify-center px-4 py-12">
       {/* Dein Logo */}
       <div className="mb-6">
         <Image
@@ -100,7 +100,7 @@ export default function AuthPage() {
       </h2>
 
       {/* Toggle Login/Register */}
-      <div className="flex items-center justify-center mb-6 space-x-3">
+      <div className="flex items-center justify-center mb-6 mt-6 space-x-3">
         <span className="text-sm font-medium text-gray-700 dark:text-white">
           Login
         </span>
@@ -204,7 +204,7 @@ export default function AuthPage() {
     transition-colors duration-300 ease-in-out
 
     hover:bg-[var(--glass-color)]
-    hover:text-[var(--glass-bg)]
+    hover:text-white
     hover:border-[var(--glass-bg)]
 
     dark:hover:text-black
