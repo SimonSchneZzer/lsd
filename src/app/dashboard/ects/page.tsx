@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Spinner from '@/components/Spinner/Spinner';
 import NotLoggedIn from '@/components/NotLoggedIn/NotLoggedIn';
 import { getUserId, fetchCourses } from '@/lib/courseService';
+import CourseOverviewCard from '@/components/CourseOverviewCard/CourseOverviewCard';
 
 type CourseWithHome = {
   courseId: string;
@@ -66,16 +67,18 @@ export default function ECTSPage() {
       {courses.length === 0 ? (
         <p>No courses found. This feature is currently only available for students with saved courses.</p>
       ) : (
-        <ul>
+        <div>
           {courses.map((course) => (
-            <li key={course.courseId} className="mb-4">
-              <p><strong>Course:</strong> {course.summary.replace(/^.*? - /, '')}</p>
-              <p><strong>ECTS:</strong> {course.ects}</p>
-              <p><strong>Contact Hours:</strong> {(course.lessonUnits * 45 / 60).toFixed(1)}h</p>
-              <p><strong>Home Study Hours:</strong> {course.homeHours}h</p>
-            </li>
+            <CourseOverviewCard
+              key={course.courseId}
+              courseId={course.courseId}
+              summary={course.summary}
+              ects={course.ects}
+              lessonUnits={course.lessonUnits}
+              homeHours={course.homeHours}
+            />
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
