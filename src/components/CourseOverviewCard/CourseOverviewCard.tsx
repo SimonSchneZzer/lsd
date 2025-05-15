@@ -9,49 +9,54 @@ type Props = {
 };
 
 export default function CourseOverviewCard({
+  courseId,
   summary,
   ects,
   lessonUnits,
   homeHours,
 }: Props) {
-  const contactHours = (lessonUnits * 45 / 60).toFixed(1);
+  const contactHours = (lessonUnits * 45) / 60;
   const isNegative = homeHours < 0;
 
   return (
-    <div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-2 p-6 mb-6 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-black/30 backdrop-blur-sm">
-      {/* Links oben: Kursname */}
-      <div>
-        <span className="block text-lg font-semibold text-gray-900 dark:text-white">
+    <div className="p-6 mb-6 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-black/30 backdrop-blur-sm">
+      <div className="flex flex-col items-center gap-4 text-center">
+        {/* Titel oben */}
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
           {summary.replace(/^.*? - /, '')}
-        </span>
-      </div>
+        </h2>
 
-      {/* Rechts oben: Kontaktstunden */}
-      <div className="text-right sm:text-left">
-        <span className="block text-sm text-gray-500 dark:text-gray-400">Kontakt</span>
-        <span className="text-base font-medium text-gray-900 dark:text-white">
-          {contactHours}h
-        </span>
-      </div>
+        {/* Mitte: ECTS & Course ID */}
+        <div className="flex justify-between w-full px-4 text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-left">
+            <span className="block">ECTS</span>
+            <span className="text-base font-medium text-gray-900 dark:text-white">{ects}</span>
+          </div>
+          <div className="text-right">
+            <span className="block">Course ID</span>
+            <span className="text-base font-mono text-gray-500 dark:text-gray-400">{courseId}</span>
+          </div>
+        </div>
 
-      {/* Links unten: ECTS */}
-      <div>
-        <span className="block text-sm text-gray-500 dark:text-gray-400">ECTS</span>
-        <span className="text-base font-medium text-gray-900 dark:text-white">
-          {ects}
-        </span>
-      </div>
-
-      {/* Rechts unten: Selbststudium */}
-      <div className="text-right sm:text-left">
-        <span className="block text-sm text-gray-500 dark:text-gray-400">Selbststudium</span>
-        <span
-          className={`text-base font-medium ${
-            isNegative ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'
-          }`}
-        >
-          {homeHours.toFixed(1)}h
-        </span>
+        {/* Unten: Kontakt & Selbststudium */}
+        <div className="flex justify-between w-full px-4 text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-left">
+            <span className="block">Kontakt</span>
+            <span className="text-base font-medium text-gray-900 dark:text-white">
+              {contactHours.toFixed(1)}h
+            </span>
+          </div>
+          <div className="text-right">
+            <span className="block">Selbststudium</span>
+            <span
+              className={`text-base font-medium ${
+                isNegative ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'
+              }`}
+            >
+              {homeHours.toFixed(1)}h
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

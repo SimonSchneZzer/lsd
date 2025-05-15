@@ -67,7 +67,7 @@ export default function ECTSPage() {
       {courses.length === 0 ? (
         <p>No courses found. This feature is currently only available for students with saved courses.</p>
       ) : (
-        <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {courses.map((course) => (
             <CourseOverviewCard
               key={course.courseId}
