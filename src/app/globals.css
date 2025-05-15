@@ -147,30 +147,6 @@ label {
   font-size: var(--bigger-font-size);
 }
 
-/* ========================
-  Button Styles
-======================== */
-button {
-  background: var(--glass-bg);
-  border: 2px solid var(--glass-color);
-  border-radius: var(--glass-radius);
-  padding: 0.5rem 1rem;
-  font-size: inherit;
-  color: var(--glass-color);
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-.button-with-icon {
-  display: flex;
-  align-items: center;
-}
-
-
-button:hover {
-  background: var(--glass-color);
-  color: var(--glass-bg);
-  border: 2px solid ;
-}
 
 
 /* ========================
