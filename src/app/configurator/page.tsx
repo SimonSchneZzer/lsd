@@ -27,7 +27,7 @@ export default function ConfiguratorPage() {
   }
 
   return (
-    <div className="p-6">
+    <div>
       {loading && <Spinner />}
       {error && <p className="text-red-600 mb-4">{error}</p>}
 
