@@ -51,7 +51,7 @@ export default function ConfiguratorPage() {
           >
             Fetch Courses
           </button>
-          <Link href="/tutorial"  className="pt-4 underline text-indigo-600 hover:text-indigo-500 font-medium text-inherit">Tutorial</Link>
+          <Link href="/dashboard/tutorial"  className="pt-4 underline text-indigo-600 hover:text-indigo-500 font-medium text-inherit">Tutorial</Link>
         </div>
       )}
 
