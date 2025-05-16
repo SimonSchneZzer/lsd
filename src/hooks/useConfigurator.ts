@@ -48,13 +48,17 @@ export function useConfigurator() {
     load();
   }, [aggregateCourses, setMessage]);
 
-  const handleChange = useCallback((index: number, field: keyof EditableCourse, value: string) => {
+  const handleChange = useCallback((index: number, field: keyof EditableCourse, value: string | number) => {
     setRawCourses(prev => {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
-        [field]: field === "lessonUnits" || field === "ects" ? Number(value) : value,
-      } as any;
+        [field]: (field === "lessonUnits" || field === "ects")
+          ? typeof value === "number"
+            ? value
+            : Number(value)
+          : value,
+      } as EditableCourse;
       return updated;
     });
   }, []);
