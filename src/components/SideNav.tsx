@@ -21,7 +21,7 @@ export default function SideNav() {
       setMessage("Abmelden fehlgeschlagen: " + error.message);
     } else {
       setMessage("Erfolgreich abgemeldet.");
-      router.push("/Welcome");
+      router.push("/");
     }
   };
 
