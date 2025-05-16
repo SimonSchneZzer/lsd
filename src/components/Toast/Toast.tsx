@@ -32,7 +32,7 @@ return (
                 shadow-lg
                 backdrop-blur-md
                 transition-opacity duration-500 ease-in-out
-                text-center
+                text-center md:text-left
                 ${visible ? 'opacity-100' : 'opacity-0'}`}
   >
     {message}
