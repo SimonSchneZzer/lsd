@@ -19,7 +19,7 @@ export default function CourseOverviewCard({
   const isNegative = homeHours < 0;
 
   return (
-    <div className="p-6 mb-6 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-black/30 backdrop-blur-sm">
+    <div className="glassCard mb-6 backdrop-blur-sm">
       <div className="flex flex-col items-center gap-4 text-center">
         {/* Titel oben */}
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">

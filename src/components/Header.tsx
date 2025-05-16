@@ -8,6 +8,7 @@ const routeAliases: Record<string, string> = {
   ects: 'ECTS Overview',
   attendance: 'Attendance Tracking',
   profile: 'Your Profile',
+  tutorial: 'Import-Tutorial',
 };
 
 const getTitleFromPath = (pathname: string): string => {

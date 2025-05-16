@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <aside className="side-nav glassCard backdrop-blur-sm">
               <SideNav />
             </aside>
-            <main className="main-content glassCard backdrop-blur-sm">
+            <main className="main-content border-none px-0 md:px-[var(--glass-padding)] py-[var(--glass-padding)] ml-[calc(var(--side-nav-width)+var(--side-nav-gap))]">
               <Header />
               <Suspense fallback={<Spinner />}>
                 {children}

@@ -25,7 +25,7 @@ export default function CourseSettingCard({
   disabled = false,
 }: CourseSettingCardProps) {
   return (
-    <div className="grid grid-cols-1 p-2 md:p-8 md:grid-rows-2 gap-4 mb-6 border-b border-black dark:border-white">
+    <div className="glassCard backdrop-blur-sm grid grid-cols-1 p-4 md:p-8 md:grid-rows-2 gap-4 mb-6">
       {/* Course ID */}
       <div className="flex flex-col col-start-1 row-start-1">
         <label className="mb-1 text-black dark:text-white">Course ID:</label>

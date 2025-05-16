@@ -5,17 +5,15 @@ import Link from 'next/link';
 
 export default function TutorialPage() {
   return (
-    <div className="min-h-screen px-6 py-12">
-    
-
+    <div className="glassCard backdrop-blur-sm px-6 py-12 mb-6">
       <header className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-2 dark:text-white">Import-Tutorial</h1>
         <p className="text-gray-600 dark:text-white">
           Folge diesen Schritten, um deinen Stundenplan einzubinden.
         </p>
       </header>
 
       <section className="space-y-12">
+        {/* Schritt 1 */}
         <div>
           <h2 className="text-2xl font-semibold text-gray-800 mb-2 dark:text-white">Schritt 1: Veranstaltungsseite öffnen</h2>
           <p className="text-gray-700 dark:text-white">
@@ -37,16 +35,18 @@ export default function TutorialPage() {
           <p className="text-gray-700 mb-4 dark:text-white">
             Scrolle ans Seitenende und klicke auf den Button, wie im Bild gezeigt.
           </p>
-          <div className="flex mt-4">
+          <div className="flex mt-4 justify-center">
             <Image
               src="/images/tutorial/tut-image1.png"
               width={300}
               height={80}
               alt="Button am Seitenende"
-              className="rounded-lg border"
+              className="rounded-lg border border-gray-300 dark:border-gray-700"
             />
           </div>
         </div>
+
+        {/* Schritt 3–7 */}
         <div>
           <h2 className="text-2xl font-semibold text-gray-800 mb-2 dark:text-white">Schritt 3 bis 7: Link importieren</h2>
           <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-white">
