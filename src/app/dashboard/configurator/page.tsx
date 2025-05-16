@@ -30,7 +30,7 @@ export default function ConfiguratorPage() {
       {loading && <Spinner />}
 
       {!loading && rawCourses.length === 0 && (
-        <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
+        <div className="glassCard backdrop-blur-sm flex flex-col items-center justify-center px-4 py-12 mb-6 text-center">
           <label htmlFor="icsUrl" className="font-medium text-gray-700 dark:text-gray-300">
             ICS URL:
           </label>
