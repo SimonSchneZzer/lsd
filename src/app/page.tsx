@@ -19,7 +19,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
+    <div className="glassCard backdrop-blur-sm px-6 py-12 mb-6 text-center">
       <main>
         <h2>
           Welcome to the <b>Lazy Student Dashboard!</b>

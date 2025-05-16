@@ -178,7 +178,6 @@ export default function SideNav() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <h2> Tutorial</h2>
               </div>
             </Link>
           </li>
@@ -188,6 +187,8 @@ export default function SideNav() {
                 onClick={handleSignOut}
                 className="flex items-center gap-2 bg-transparent border-0 cursor-pointer"
               >
+                <h2> Logout</h2>
+
                 <svg
                   width="30"
                   height="30"
@@ -213,6 +214,8 @@ export default function SideNav() {
                 onClick={handleSignIn}
                 className="flex items-center gap-2 bg-transparent border-0 cursor-pointer"
               >
+                <h2> Login</h2>
+
                 <svg
                   width="30"
                   height="30"
@@ -232,6 +235,7 @@ export default function SideNav() {
     C-1.2,241.2-1.2,249,3.6,253.8z"
                   />
                 </svg>
+
               </button>
               // Not logged-in user icon (simple user outline)
             )}

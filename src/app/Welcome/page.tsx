@@ -82,7 +82,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 py-12">
+    <div className="glassCard backdrop-blur-sm flex flex-col items-center justify-center px-4 py-12 mb-6">
       {/* Dein Logo */}
       <div className="mb-6">
         <Image
