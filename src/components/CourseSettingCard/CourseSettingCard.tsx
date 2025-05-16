@@ -41,8 +41,9 @@ export default function CourseSettingCard({
         <label className="mb-1 text-black dark:text-white">ECTS:</label>
         <input
           type="number"
+          placeholder="0"     
           className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          value={course.ects}
+          value={course.ects === 0 ? "" : course.ects}
           onChange={(e) => onChange(index, "ects", e.target.value)}
         />
       </div>
@@ -66,8 +67,9 @@ export default function CourseSettingCard({
         <label className="mb-1 text-black dark:text-white">Lesson Units:</label>
         <input
           type="number"
+          placeholder="0"  
           className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          value={course.lessonUnits}
+          value={course.lessonUnits === 0 ? "" : course.lessonUnits}
           onChange={(e) => onChange(index, "lessonUnits", e.target.value)}
         />
       </div>

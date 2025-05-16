@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     // Normalize and unfold lines
     icsData = icsData.replace(/\r\n/g, "\n").replace(/\n[ \t]/g, "");
     const eventBlocks = icsData.match(/BEGIN:VEVENT([\s\S]*?)END:VEVENT/g);
-    if (!eventBlocks) return NextResponse.json<ApiResponse>({ events: [], totalEcts: 0 });
+    if (!eventBlocks) return NextResponse.json<ApiResponse>({ events: [], totalEcts: 0});
 
     const flattenedMapping = flattenMapping(ectsMappingData);
     const unmatchedSummaries: string[] = [];
