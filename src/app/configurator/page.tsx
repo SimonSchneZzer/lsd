@@ -11,10 +11,9 @@ export default function ConfiguratorPage() {
   const {
     userId,
     loading,
-    error,
     rawCourses,
     icsUrl,
-    setIcsUrl,
+    setIcsUrl, 
     handleChange,
     handleAdd,
     handleDelete,
@@ -29,7 +28,6 @@ export default function ConfiguratorPage() {
   return (
     <div>
       {loading && <Spinner />}
-      {error && <p className="text-red-600 mb-4">{error}</p>}
 
       {!loading && rawCourses.length === 0 && (
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
