@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Spinner from '@/components/Spinner/Spinner';
-import CourseCard from '@/components/CourseCard/CourseCard';
+import CourseSettingCard from '@/components/CourseSettingCard/CourseSettingCard';
 import { useConfigurator } from '@/hooks/useConfigurator';
 import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 import NotLoggedIn from '@/components/NotLoggedIn/NotLoggedIn';
@@ -57,7 +57,7 @@ export default function ConfiguratorPage() {
             <div className="space-y-6 max-w-[1200px] mx-auto ">
             {rawCourses.map((course, i) => (
               <ErrorBoundary key={i}>
-                <CourseCard
+                <CourseSettingCard
                   course={course}
                   index={i}
                   onChange={handleChange}

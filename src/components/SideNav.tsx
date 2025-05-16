@@ -83,8 +83,8 @@ export default function SideNav() {
             </div>
           </Link>
         </li>
-        <li className={isActive("/configurator") ? "active" : ""}>
-          <Link href="/configurator">
+        <li className={isActive("/dashboard/configurator") ? "active" : ""}>
+          <Link href="/dashboard/configurator">
             <div className="flex items-center gap-2">
               <svg
                 width="30"

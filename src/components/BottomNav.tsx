@@ -77,7 +77,7 @@ export default function BottomNav() {
         </li>
         <li className="flex justify-center items-center">
           {" "}
-          <Link href="/configurator">
+          <Link href="/dashboard/configurator">
             <svg
               width="30"
               height="30"
@@ -114,7 +114,7 @@ export default function BottomNav() {
         </li>
         <li className="flex justify-center items-center">
           {" "}
-          <Link href="/profile">
+          <Link href="/dashboard/profile">
             {isLoggedIn ? (
               // Logged-in user icon
               <svg
