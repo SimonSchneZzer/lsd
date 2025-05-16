@@ -162,8 +162,8 @@ export default function SideNav() {
             </div>
           </Link>
         </li>
-        <li className={`${isActive("/profile") ? "active" : ""} mt-auto`}>
-          <Link href="/profile">
+        <li className={`${isActive("/dashboard/profile") ? "active" : ""} mt-auto`}>
+          <Link href="/dashboard/profile">
             <div className="flex items-center gap-2">
               {isLoggedIn ? (
                 <svg
