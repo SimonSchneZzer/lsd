@@ -15,7 +15,7 @@
   padding: 10px;
   box-sizing: border-box;
   display: grid;
-  filter: blur(1px) contrast(10) hue-rotate(300deg);
+  filter: blur(1px) contrast(1);
 }
 
 .loader::before,
