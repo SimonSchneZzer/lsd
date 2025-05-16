@@ -12,9 +12,9 @@ export default function SideNav() {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <nav>
+    <nav className="flex flex-col h-screen">
       <h1>Lazy Student Dashboard</h1>
-      <ul>
+      <ul className="flex flex-col flex-1">
         <li className={isActive("/dashboard/attendance") ? "active" : ""}>
           <Link href="/dashboard/attendance">
             <div className="flex items-center gap-2">
@@ -122,8 +122,48 @@ export default function SideNav() {
             </div>
           </Link>
         </li>
-        <li className={isActive("/dashboard/profile") ? "active" : ""}>
-          <Link href="/dashboard/profile">
+
+        <li className={isActive("/dashboard/tutorial") ? "active" : ""}>
+          <Link href="/dashboard/tutorial">
+            <div className="flex items-center gap-2">
+              <svg
+                width="30"
+                height="30"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  opacity="0.1"
+                  d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                  fill="#none"
+                />
+                <path
+                  d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M10.5 8.67709C10.8665 8.26188 11.4027 8 12 8C13.1046 8 14 8.89543 14 10C14 10.9337 13.3601 11.718 12.4949 11.9383C12.2273 12.0064 12 12.2239 12 12.5V12.5V13"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 16H12.01"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <h2> Tutorial</h2>
+            </div>
+          </Link>
+        </li>
+        <li className={`${isActive("/profile") ? "active" : ""} mt-auto`}>
+          <Link href="/profile">
             <div className="flex items-center gap-2">
               {isLoggedIn ? (
                 <svg
@@ -208,45 +248,6 @@ export default function SideNav() {
                 </svg>
               )}
               <h2>Profile</h2>
-            </div>
-          </Link>
-        </li>
-        <li className={isActive("/dashboard/tutorial") ? "active" : ""}>
-          <Link href="/dashboard/tutorial">
-            <div className="flex items-center gap-2">
-              <svg
-                width="30"
-                height="30"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  opacity="0.1"
-                  d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
-                  fill="#none"
-                />
-                <path
-                  d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M10.5 8.67709C10.8665 8.26188 11.4027 8 12 8C13.1046 8 14 8.89543 14 10C14 10.9337 13.3601 11.718 12.4949 11.9383C12.2273 12.0064 12 12.2239 12 12.5V12.5V13"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12 16H12.01"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <h2> Tutorial</h2>
             </div>
           </Link>
         </li>
