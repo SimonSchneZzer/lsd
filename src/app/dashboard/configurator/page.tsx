@@ -6,6 +6,8 @@ import CourseSettingCard from '@/components/CourseSettingCard/CourseSettingCard'
 import { useConfigurator } from '@/hooks/useConfigurator';
 import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 import NotLoggedIn from '@/components/NotLoggedIn/NotLoggedIn';
+import Link from 'next/link';
+
 
 export default function ConfiguratorPage() {
   const {
@@ -49,6 +51,7 @@ export default function ConfiguratorPage() {
           >
             Fetch Courses
           </button>
+          <Link href="/tutorial"  className="pt-4 underline text-indigo-600 hover:text-indigo-500 font-medium text-inherit">Tutorial</Link>
         </div>
       )}
 
