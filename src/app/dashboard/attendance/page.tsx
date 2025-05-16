@@ -17,7 +17,7 @@ export default function AttendancePage() {
   return (
     <div>
       {data.length === 0 ? (
-        <p>Keine Anwesenheitsdaten gefunden.</p>
+        <p>No courses found. This feature is currently only available for students with saved courses.</p>
       ) : (
         data.map(item => (
           <ProgressBar
