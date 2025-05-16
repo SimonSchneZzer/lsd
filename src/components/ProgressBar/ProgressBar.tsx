@@ -24,7 +24,7 @@ export default function ProgressBar({
       : 0;
 
   return (
-    <div className="pb-[var(--glass-padding)]">
+    <div className="glassCard backdrop-blur-sm mb-6">
       <h2 className="text-lg font-semibold mb-2">
         <strong>{summary.replace(/^.*? - /, '')}</strong>
       </h2>
