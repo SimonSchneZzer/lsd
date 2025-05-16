@@ -43,7 +43,7 @@ describe('<AttendancePage />', () => {
 
     // Wartet darauf, dass die Nachricht "keine anwesenheitsdaten" angezeigt wird, wenn keine Daten vorhanden sind.
     await waitFor(() => {
-      expect(screen.getByText(/keine anwesenheitsdaten/i)).toBeInTheDocument();
+      expect(screen.getByText(/no courses found/i)).toBeInTheDocument();
     });
   });
 

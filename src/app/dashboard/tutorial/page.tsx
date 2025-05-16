@@ -53,7 +53,7 @@ export default function TutorialPage() {
             <li>
               Wechsle zum Lazy Student Dashboard →{' '}
               <Link
-                href="/configurator"
+                href="/dashboard/configurator"
                 className="text-indigo-600 hover:text-indigo-500 underline dark:text-white"
               >
                 Course Settings
