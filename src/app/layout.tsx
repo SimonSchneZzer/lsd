@@ -29,10 +29,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <SessionProviderWrapper initialSession={session}>
         <Toast />
           <div className="layout">
-            <aside className="side-nav glassCard">
+            <aside className="side-nav glassCard backdrop-blur-sm">
               <SideNav />
             </aside>
-            <main className="main-content glassCard">
+            <main className="main-content glassCard backdrop-blur-sm">
               <Header />
               <Suspense fallback={<Spinner />}>
                 {children}
