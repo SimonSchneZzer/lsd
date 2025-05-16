@@ -57,6 +57,7 @@ export default function AuthPage() {
         setMessage(error.message);
       } else {
         setMessage('Registrierung erfolgreich! Willkommen!');
+        router.push('/');
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({
