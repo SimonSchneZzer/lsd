@@ -21,20 +21,21 @@ export default function Toast() {
 
   if (!message) return null;
 
-  return (
-    <div
-      className={`fixed top-10 left-1/2 -translate-x-1/2 z-100
-                  px-4 py-2
-                  border-2 border-[var(--glass-color)]   
-                  bg-[var(--glass-bg)]
-                  text-[var(--glass-color)]
-                  rounded-[var(--glass-radius)]
-                  shadow-lg
-                  backdrop-blur-md
-                  transition-opacity duration-500 ease-in-out
-                  ${visible ? 'opacity-100' : 'opacity-0'}`}
-    >
-      {message}
-    </div>
-  );
+return (
+  <div
+    className={`fixed top-10 left-1/2 -translate-x-1/2 z-100
+                px-4 py-2
+                border-2 border-[var(--glass-color)]
+                bg-[var(--glass-bg)]
+                text-[var(--glass-color)]
+                rounded-[var(--glass-radius)]
+                shadow-lg
+                backdrop-blur-md
+                transition-opacity duration-500 ease-in-out
+                text-center md:text-left
+                ${visible ? 'opacity-100' : 'opacity-0'}`}
+  >
+    {message}
+  </div>
+);
 }

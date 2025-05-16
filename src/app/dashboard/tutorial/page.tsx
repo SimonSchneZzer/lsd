@@ -46,9 +46,8 @@ export default function TutorialPage() {
           </div>
         </div>
 
-        {/* Schritt 3–7 */}
         <div>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2 dark:text-white">Schritt 3 bis 7: Link importieren</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2 dark:text-white">Schritt 3</h2>
           <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-white">
             <li>Kopiere den angezeigten ICS-Link.</li>
             <li>

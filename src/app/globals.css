@@ -252,7 +252,6 @@ label {
 
   .main-content {
     margin-left: 0;
-    padding-bottom: var(--main-content-padding-bottom);
   }
 
   .bottom-nav {
